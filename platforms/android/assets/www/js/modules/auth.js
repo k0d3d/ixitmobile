@@ -1,9 +1,37 @@
 (function () {
   var app = angular.module('auth', []);
+
+
+  app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider) {
+    $stateProvider
+
+    .state('app.fs.login', {
+      url: "/auth",
+      views: {
+        'fullContent@app.fs' :{
+          controller: 'RegisterLoginCtrl',
+          templateUrl: "templates/auth/login.html"
+        }
+      }
+    });
+
+  });
+
   app.controller('RegisterCtrl', ['$scope', function ($scope) {
 
   }]);
-  app.controller('RegisterLoginCtrl', function($scope, $http, $state, AuthenticationService, $ionicPopup, $window, $ionicPlatform, $location, $timeout) {
+
+  app.controller('RegisterLoginCtrl',[
+    '$scope',
+    '$state',
+    'AuthenticationService',
+    '$ionicPopup',
+    '$ionicModal',
+    '$window',
+    '$ionicPlatform',
+    '$timeout',
+    'appBootStrap',
+    function($scope, $state, AuthenticationService, $ionicPopup, $ionicModal, $window, $ionicPlatform, $timeout, appBootStrap) {
     $ionicPlatform.onHardwareBackButton(function () {
       return false;
     });
@@ -14,6 +42,19 @@
       username: null,
       password: null
     };
+
+    $ionicModal.fromTemplateUrl('templates/auth/login.html',
+      {
+        scope: $scope,
+        animation: 'slide-in-up',
+        focusFirstInput: true,
+        backdropClickToClose: false,
+        hardwareBackButtonClose: false
+      }
+    ).then(function (modal) {
+      appBootStrap.activeModal = modal;
+      appBootStrap.activeModal.show();
+    });
 
     $scope.loginBtn = function(form) {
       AuthenticationService.login(form);
@@ -38,7 +79,7 @@
                   text: '<b>Login Now</b>',
                   type: 'button-positive',
                   onTap: function(e) {
-                    $state.go('app.login');
+                    $state.go('app.ds.login');
                   }
                 }
               ]
@@ -47,15 +88,13 @@
       });
     };
 
-    $scope.$on('event:auth-loginConfirmed', function() {
+    $scope.$on('auth:auth-login-confirmed', function() {
+      appBootStrap.activeModal.hide();
       $scope.username = null;
-      var url=$location.absUrl() + '#/app/files';
-      $timeout(function() {
-        $window.location.href=url;
-      });
+      $state.go('app.tixi.files', {}, {reload: true, inherit: false});
     });
 
-    $scope.$on('event:auth-login-failed', function(e, status) {
+    $scope.$on('auth:auth-login-failed', function(e, status) {
       var error = "Login failed.";
       if (status == 401) {
         error = "Invalid Username or Password.";
@@ -70,7 +109,11 @@
       });
     });
 
-  });
+    // $scope.$on('auth:auth-login-confirmed', function() {
+
+    // });
+
+  }]);
   app.controller('LogoutCtrl', function($scope, AuthenticationService, $window) {
       AuthenticationService.logout();
       delete $window.sessionStorage.authorizationToken;

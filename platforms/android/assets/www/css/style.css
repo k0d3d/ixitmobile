@@ -102,6 +102,7 @@ align-items: center;
   border-bottom: solid 2px #434343;
 }
 
+
 @media (min-width: 768px) {
   .menu-content {
      -webkit-transform: translate3d(270px, 0px, 0px) !important;

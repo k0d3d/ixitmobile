@@ -219,6 +219,20 @@ module.exports = [
         "clobbers": [
             "IXITFileNameQuery"
         ]
+    },
+    {
+        "file": "plugins/org.apache.cordova.inappbrowser/www/inappbrowser.js",
+        "id": "org.apache.cordova.inappbrowser.inappbrowser",
+        "clobbers": [
+            "window.open"
+        ]
+    },
+    {
+        "file": "plugins/nl.x-services.plugins.launchmyapp/www/android/LaunchMyApp.js",
+        "id": "nl.x-services.plugins.launchmyapp.LaunchMyApp",
+        "clobbers": [
+            "window.plugins.launchmyapp"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -235,7 +249,9 @@ module.exports.metadata =
     "com.brodysoft.sqlitePlugin": "1.0.3",
     "com.megster.cordova.FileChooser": "0.0.0",
     "android.support.v4": "21.0.1",
-    "com.ixit.filenamequery": "1.0.0"
+    "com.ixit.filenamequery": "1.0.0",
+    "org.apache.cordova.inappbrowser": "0.5.5-dev",
+    "nl.x-services.plugins.launchmyapp": "3.2.2"
 }
 // BOTTOM OF METADATA
 });

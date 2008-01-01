@@ -21,6 +21,8 @@
     <script src="js/vendor/imgcache.js"></script>
     <script src="js/vendor/moment.min.js"></script>
     <script src="js/vendor/ng-flow-standalone.js"></script>
+    <script src="js/vendor/pouchdb-3.3.1.min.js"></script>
+    <script src="js/vendor/geolib.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
@@ -35,9 +37,11 @@
   </head>
 
   <body ng-app="ixitApp">
-    <ion-nav-view name="mainContent" animation="slide-left-right"></ion-nav-view>
-    <ion-nav-view name="noHeaderContent"></ion-nav-view>
-
-
+    <div class="app-ctrl" ng-controller="AppCtrl">
+      <ion-nav-view name="maincontent" animation="slide-left-right"></ion-nav-view>
+      <div class="full-screen-container" ng-show="mainCfg.viewNoHeaderIsActive">
+        <ion-nav-view name="noheadercontent"></ion-nav-view>
+      </div>
+    </div>
   </body>
 </html>

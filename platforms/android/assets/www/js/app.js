@@ -43,19 +43,6 @@ app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($
         alert('ImgCache init: error! Check the log for errors');
     });
 
-    $ionicPlatform.onHardwareBackButton(function () {
-        // if(angular.element('#login-modal')) { // your check here
-        //     $ionicPopup.confirm({
-        //       title: 'System warning',
-        //       template: 'are you sure you want to exit?'
-        //     }).then(function(res){
-        //       if( res ){
-        //         navigator.app.exitApp();
-        //       }
-        //     });
-        // }
-    });
-
     window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_STREAM,
         function(url) {
           console.log(url);
@@ -78,8 +65,15 @@ app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($
         }
     });
 
+    // if thr no no auth..token in app local storage, treat d user as a first time user
+    if (!$window.localStorage.authorizationToken) {
+        return $state.transitionTo('app.auth.welcome', $stateParams, { reload: true, inherit: true, notify: true });
+    }
 
+    //load this device in
+    appBootStrap.strapCordovaDevice();
   });
+  // appBootStrap.strapCordovaDevice();
 
 }]);
 
@@ -89,18 +83,24 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
     .state('app', {
       url: "/app",
       abstract: true,
+      controller: 'AppCtrl'
+    })
+
+    .state('app.tixi', {
+      url: "/tixi",
+      abstract: true,
       views: {
-        'mainContent' : {
+        'maincontent@' : {
           templateUrl: "templates/app.html",
-          controller: 'AppCtrl'
+          controller: 'TixiCtrl'
         }
       }
     })
 
-    .state('app.files', {
+    .state('app.tixi.files', {
       url: "/files",
       views: {
-        'viewContent@app' :{
+        'viewContent@app.tixi' :{
           templateUrl: "templates/files.html",
           controller: 'FilesCtrl',
           resolve: {
@@ -111,46 +111,34 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         }
       }
     })
-    .state('app.upload', {
+    .state('app.tixi.upload', {
       url: "/upload",
       views: {
-        'viewContent@app' :{
+        'viewContent@app.tixi' :{
           templateUrl: "templates/upload.html",
           controller: 'UploaderCtrl'
         }
       }
     })
-    .state('app.login', {
-      url: "/auth/login",
+    .state('app.fs', {
+      url: "/fs",
+      abstract: true,
       views: {
-        'viewContent@app' :{
-          controller: ['$ionicModal', 'appBootStrap', function ($ionicModal, appBootStrap) {
-            $ionicModal.fromTemplateUrl('templates/auth/login.html',
-              {
-                // scope: $scope,
-                animation: 'slide-in-up',
-                focusFirstInput: true,
-                backdropClickToClose: false,
-                hardwareBackButtonClose: false
-              }
-            ).then(function (modal) {
-              appBootStrap.activeModal = modal;
-              appBootStrap.activeModal.show();
-            });
-            // appBootStrap.loginModal.show();
-          }]
+        'noheadercontent@' : {
+          templateUrl: "full-screen.html",
+
         }
       }
     })
-    .state('app.account', {
-      url: "/account",
+    .state('app.fs.welcome', {
+      url: "/welcome",
       views: {
-        'menuContent' :{
-          templateUrl: "templates/account.html",
-          // controller: 'PlaylistsCtrl'
+        'fullContent@app.fs' :{
+          templateUrl: "templates/splash-first.html"
         }
       }
     });
+
 
     flowFactoryProvider.defaults = {
         target: api_config.FILEVAULT_API_URL + '/upload',
@@ -173,52 +161,66 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
 
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/upload');
+  $urlRouterProvider.otherwise('/app/tixi/upload');
 
   $httpProvider.interceptors.push('tokenInterceptor');
   $httpProvider.interceptors.push('connectionInterceptor');
-  $httpProvider.interceptors.push(['$rootScope', '$q', function($rootScope, $q) {
-    return {
-      responseError: function(response) {
-        if (response.status === 403) {
-          $rootScope.$broadcast('auth-loginRequired');
-        }
-        // otherwise, default behaviour
-        return $q.reject(response);
-      }
-    };
+
+  $httpProvider.interceptors.push(['$q', 'api_config', '$rootScope', function ($q, api_config, $rootScope) {
+      return {
+          'request': function (config) {
+            $rootScope.$broadcast('app:is-requesting', true);
+             if (config.url.indexOf('/api/') > -1 ) {
+                config.url = api_config.CONSUMER_API_URL + '' + config.url;
+                return config || $q.when(config);
+              } else {
+               return config || $q.when(config);
+              }
+          },
+          'response': function (resp) {
+              $rootScope.$broadcast('app-is-requesting', false);
+              // appBootStrap.isRequesting = false;
+               return resp || $q.when(resp);
+          },
+          // optional method
+         'responseError': function(response) {
+            // do something on error
+            if (response.status === 403) {
+              $rootScope.$broadcast('app:auth-login-required');
+            }
+            $rootScope.$broadcast('app:is-requesting', false);
+            return $q.reject(response);
+          },
+          // optional method
+         'requestError': function(response) {
+            // do something on error
+            $rootScope.$broadcast('app:is-requesting', false);
+            return $q.reject(response);
+          }
+
+      };
   }]);
+
 });
 
-app.controller('MainCtrl', ['$scope', '$cordovaToast', function ($scope, $cordovaToast) {
-  $scope.$on('flow::filesAdded', function (e, $flow, file) {
-    if (window.cordova) {
-      $cordovaToast.showShortBottom('Added '+ arguments[2].length + ' file(s) to upload queue' );
-    }
-  });
+app.controller('AppCtrl' , [
+  '$scope',
+  '$state',
+  '$stateParams',
+  '$window',
+  function ($scope, $state, $stateParams, $window) {
+  console.log('always runs');
+  $scope.mainCfg = {
+    viewNoHeaderIsActive: true
+  };
+  if ($window.localStorage.authorizationToken) {
+    return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
+  }
 
-  // You can also set default events:
-  $scope.$on('flow::progress', function (event) {
-    // ...
-    // console.log('progress', arguments);
-  });
-  $scope.$on('flow::error', function () {
-    // ...
-  });
-
-  // You can also set default events:
-  $scope.$on('flow::fileSuccess', function (e, $flow, file, message) {
-    if (message.indexOf('ixid') < 0) {
-      file.error = true;
-      return false;
-    }
-    var o = JSON.parse(message);
-    file.ixid = o.ixid;
-  });
 
 }]);
 
-app.controller('AppCtrl',
+app.controller('TixiCtrl',
   [
   '$scope',
   '$state',
@@ -239,6 +241,26 @@ app.controller('AppCtrl',
     dir: [],
     files: []
   };
+
+
+  $scope.$on('$stateChangeStart',
+  function(event, toState, toParams, fromState, fromParams){
+    //check for an authorizationToken in our localStorage
+    //if we find one, we check if it is a Bearer type token,
+    //we wanna redirect to our login page to get new auth tokens
+    //
+    if ($window.localStorage.authorizationToken) {
+      //if we have an bearer type auth token and for some reason, we're being sent to any
+      //app.auth state... it should freeze d transition.
+      if (
+        ($window.localStorage.authorizationToken && toState.name.indexOf("app.fs.auth") > -1 ) &&
+        ($window.localStorage.authorizationToken.split(" ")[0] == 'Bearer' && toState.name.indexOf("app.fs.auth") > -1 )
+      ) {
+        console.log('shouldnt b here');
+        return event.preventDefault();
+      }
+    }
+  });
 
   // $scope.$watch('isConnected', function (n) {
   //   if (!n) {
@@ -317,11 +339,11 @@ app.controller('AppCtrl',
 
   //checks if there is an authorization token on
   //our localStorage
-  if (!$window.localStorage.authorizationToken) {
-    $state.go('splash.welcome');
+  if (!appBootStrap.isTokenPresent) {
+    $state.go('app.fs.welcome');
   }
 
-  $scope.$on('ds::connectionLost', function () {
+  $scope.$on('app:connection-lost', function () {
     // window.location = "noresponse.html";
     $scope.isConnected = false;
 
@@ -332,7 +354,7 @@ app.controller('AppCtrl',
       // .then(function (res) {
       //   console.log(res);
       //   if (res) {
-      //     $scope.$emit('ds::connectionRestored');
+      //     $scope.$emit('ds::connection-restored');
       //     // setTimeout(keepChecking(), 10000);
       //   }
       // });
@@ -346,7 +368,7 @@ app.controller('AppCtrl',
       .then(function (res) {
         console.log(res);
         if (res) {
-          $scope.$emit('ds::connectionRestored');
+          $scope.$emit('app:connection-restored');
         }
       });
     }, 10000);
@@ -356,21 +378,18 @@ app.controller('AppCtrl',
 
   });
 
-  $scope.$on('ds::connectionRestored', function () {
+  $scope.$on('app:connection-restored', function () {
     $scope.isConnected = true;
   });
 
-  $scope.$on('auth-loginRequired', function(e, rejection) {
-    if (!$state.is('app.login')) {
-      $state.go('app.login');
+  $scope.$on('app:auth-login-required', function(e, rejection) {
+    if (!$state.is('app.fs.login')) {
+      $state.go('app.fs.login');
     }
   });
 
-  $scope.$on('event:auth-loginConfirmed', function() {
-    appBootStrap.activeModal.hide();
-  });
-  $scope.$on('event:auth-logout-complete', function() {
-    $state.go('app.home', {}, {reload: true, inherit: false});
+  $scope.$on('app:auth-logout-complete', function() {
+    $state.go('app.fs.home', {}, {reload: true, inherit: false});
   });
 
 
@@ -385,14 +404,14 @@ app.factory("connectionInterceptor", function($q, $rootScope) {
       return {
         responseError: function(rejection) {
             if(rejection.status == 0) {
-              $rootScope.$broadcast('ds::connectionLost');
+              $rootScope.$broadcast('app:connection-lost');
               return;
             }
 
            return $q.reject(rejection);
         },
         request: function (config) {
-          $rootScope.$broadcast('ds::connectionRestored');
+          $rootScope.$broadcast('app:connection-restored');
           return config;
         }
       };
@@ -402,7 +421,7 @@ app.factory('tokenInterceptor', function ($window) {
     request: function (config) {
       config.headers = config.headers || {};
       if ($window.localStorage.authorizationToken) {
-        config.headers.Authorization = 'Bearer ' + $window.localStorage.authorizationToken;
+        config.headers.Authorization = $window.localStorage.authorizationToken;
       }
       return config;
     }

@@ -1,5 +1,39 @@
 (function () {
   var app = angular.module('services', []);
+  app.factory('Messaging', [
+    '$http',
+    'api_config',
+    '$state',
+    'appBootStrap',
+    '$rootScope',
+    function ($http, api_config, $state, appBootStrap, $rootScope) {
+    var regid = '';
+
+
+    return {
+      setRegId: function (regId) {
+        this.regid = regId;
+        return true;
+      },
+      getRegId: function () {
+        return this.regid;
+      },
+      ping: function (deviceId, cb) {
+        var self = this;
+        $http.post('/api/v1/messaging/' + deviceId, {
+          rId: self.regid
+        })
+        .success(function (data) {
+          cb(data);
+        })
+        .error(function (err) {
+          cb(err);
+        });
+      },
+      execAction: function execAction (actionName, params) {
+      }
+    };
+  }]);
   app.factory('AuthenticationService', [
     '$rootScope',
     '$http',
@@ -10,7 +44,7 @@
     function($rootScope, $http, api_config, $window, appBootStrap) {
       var service = {
         register: function (user, cb) {
-          $http.post(api_config.CONSUMER_API_URL + '/api/v1/users', {
+          $http.post('/api/v2/users', {
             email: encodeURI(user.email),
             phoneNumber: user.phoneNumber,
             password: user.password
@@ -22,13 +56,43 @@
             cb(new Error(data.message));
           });
         },
+        // login: function(user) {
+        //   $http.post('/api/v1/users/auth', {
+        //     email: encodeURI(user.email),
+        //     password: user.password
+        //   })
+        //   .success(function (data, status) {
+        //     $http.defaults.headers.common.Authorization = 'Bearer ' + data.authorizationToken;  // Step 1
+
+        //     // Need to inform the http-auth-interceptor that
+        //     // the user has logged in successfully.  To do this, we pass in a function that
+        //     // will configure the request headers with the authorization token so
+        //     // previously failed requests(aka with status == 401) will be resent with the
+        //     // authorization token placed in the header
+        //     // config.headers.Authorization = 'Bearer ' + data.authorizationToken;
+        //     $window.localStorage.authorizationToken = data.authorizationToken;
+        //     $rootScope.$broadcast('auth:auth-login-confirmed', status);
+
+        //   })
+        //   .error(function (data, status) {
+        //     $rootScope.$broadcast('event:auth-login-failed', status);
+        //     delete $window.localStorage.authorizationToken;
+        //   });
+        // },
         login: function(user) {
-          $http.post(api_config.CONSUMER_API_URL + '/api/v1/users/auth', {
-            email: encodeURI(user.email),
-            password: user.password
+          // return $rootScope.$broadcast('auth:auth-login-confirmed');
+          var authHeaderString = 'Basic ' + btoa(encodeURIComponent(user.email) + ':' + user.password);
+          // console.log(atob(authHeaderString));
+          $http.defaults.headers.common.Authorization =  authHeaderString;
+          $http.post('/api/v2/users/auth', {
+          // $http.post('/api/v1/users/auth', {
+            // email: encodeURI(user.email),
+            // password: user.password
+            device: appBootStrap.thisDevice.uuid
+            // device: 'eb0af84b7417e4e1'
           })
           .success(function (data, status) {
-            $http.defaults.headers.common.Authorization = 'Bearer ' + data.authorizationToken;  // Step 1
+            $http.defaults.headers.common.Authorization = authHeaderString;  // Step 1
 
             // Need to inform the http-auth-interceptor that
             // the user has logged in successfully.  To do this, we pass in a function that
@@ -36,21 +100,41 @@
             // previously failed requests(aka with status == 401) will be resent with the
             // authorization token placed in the header
             // config.headers.Authorization = 'Bearer ' + data.authorizationToken;
-            $window.localStorage.authorizationToken = data.authorizationToken;
-            $rootScope.$broadcast('event:auth-loginConfirmed', status);
+            $window.localStorage.authorizationToken = authHeaderString;
+
+
+            appBootStrap.clientAuthenticationCheck()
+            .then(function (isClient) {
+              if (isClient.data) {
+                // appBootStrap.mockOAuth(isClient.data.clientKey, isClient.data.clientSecret, user)
+                appBootStrap.clientOAuth(isClient.data.clientKey, isClient.data.clientSecret, user)
+                .then(function (token) {
+                  $rootScope.$broadcast('auth:auth-login-confirmed', status);
+                });
+              } else {
+                appBootStrap.clientAuthenticationCreate()
+                .then (function (client) {
+                  appBootStrap.clientOAuth(client.data.clientKey, client.data.clientSecret, user)
+                  .then(function (token) {
+                    $rootScope.$broadcast('auth:auth-login-confirmed', status);
+                  });
+                });
+              }
+            });
+
 
           })
           .error(function (data, status) {
-            $rootScope.$broadcast('event:auth-login-failed', status);
+            $rootScope.$broadcast('auth:auth-login-failed', status);
             delete $window.localStorage.authorizationToken;
           });
         },
         logout: function(user) {
-          $http.delete(api_config.CONSUMER_API_URL + '/api/v1/users/auth', {})
+          $http.delete('/api/v2/users/auth', {})
           .finally(function(data) {
             delete $http.defaults.headers.common.Authorization;
             delete $window.localStorage.authorizationToken;
-            $rootScope.$broadcast('event:auth-logout-complete');
+            $rootScope.$broadcast('auth:auth-logout-complete');
           });
         },
         loginCancelled: function() {
@@ -81,7 +165,7 @@
        * @return {[type]}
        */
       a.thisUserFiles = function(param, callback){
-        return $http.get(api_config.CONSUMER_API_URL + '/api/v1/users/files', param)
+        return $http.get('/api/v1/users/files', param)
                 .then(function(data) {
                   return data;
                 }, function (data, status) {
@@ -308,9 +392,183 @@
       }
     };
   }]);
-  app.factory('appBootStrap', ['$ionicModal', function ($ionicModal) {
+  app.factory('appBootStrap', [
+    '$ionicModal',
+    '$cordovaDevice',
+    '$http',
+    'api_config',
+    '$q',
+    '$window',
+    '$ionicPopover',
+    '$timeout',
+    function ($ionicModal, $cordovaDevice, $http, api_config, $q, $window, $ionicPopover, $timeout) {
     return {
-      activeModal: null
+      activeModal: null,
+      pendingPrompt: null,
+      thisDevice: null,
+      isRequesting: false,
+      isTokenPresent: $window.localStorage.authorizationToken || false,
+      modals: {},
+      openOnStateChangeSuccess: function openOnStateChangeSuccess (actionName) {
+        console.log('should set');
+        this.pendingPrompt = actionName;
+        console.log(actionName, this.pendingPrompt);
+      },
+      clearPendingPrompts: function clearPendingPrompts () {
+        this.pendingPrompt = null;
+        console.log(this.pendingPrompt);
+      },
+      strapCordovaDevice: function () {
+        var self = this;
+        console.log('strapped');
+        return $timeout(function () {
+          self.thisDevice = $cordovaDevice.getDevice();
+        });
+      },
+      tagPopOverinit: function (scope, cb) {
+        // .fromTemplateUrl() method
+        $ionicPopover.fromTemplateUrl('templates/inc/tag-popover.html', {
+          scope: scope,
+        }).then(function(popover) {
+          cb(popover);
+        });
+      },
+      clientAuthenticationCheck: function (cb) {
+        var self = this,
+            deviceId = $cordovaDevice.getUUID();
+        return $http.get('/api/v2/clients/' + deviceId + '?field_type=device');
+        // .success(function (client) {
+        //   cb(client);
+        // })
+        // .error(function (err, status) {
+        //   if(status === 404) {
+        //     cb (404);
+        //   } else {
+        //     cb (err);
+        //   }
+
+        // });
+      },
+      clientAuthenticationCreate: function (cb) {
+        var self = this,
+            deviceName = $cordovaDevice.getModel() || 'Unknown Device',
+            deviceId = $cordovaDevice.getUUID();
+            return $http.post('/api/v2/clients', {
+              name: deviceName,
+              deviceId: deviceId
+            });
+        // .success(function (data) {
+        //   cb (data);
+        // })
+        // .error(function (err) {
+        //   console.log(err);
+        //   cb(err);
+        // });
+      },
+      clientAuthenticationReset: function () {
+        var self = this,
+            deviceId = $cordovaDevice.getUUID();
+        $http.delete('/api/v2/clients/' + deviceId + '?field_type=id')
+        .success(function (data) {
+          cb (data);
+        })
+        .error(function (err) {
+          console.log(err);
+          console.log('device client reg failed');
+        });
+      },
+      clientAuthenticationSave: function () {
+
+      },
+      mockOAuth : function mockOAuth (clientId, clientSecret, user) {
+        var deferred = $q.defer();
+
+
+        var browserRef = window.open(api_config.CONSUMER_API_URL + "/oauth/authorize?client_id=" + clientId + "&redirect_uri=http://localhost/callback&response_type=code&scope=read%20write&email=" +user.email+ "&password=" + user.password, "_blank", "location=no,clearsessioncache=yes,clearcache=yes");
+        browserRef.addEventListener("loadstart", function(event) {
+            if((event.url).indexOf("http://localhost/callback") === 0) {
+                var requestToken = (event.url).split("code=")[1];
+                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+                var authHeaderString = 'Basic ' + btoa(clientId + ':' + clientSecret);
+                delete $http.defaults.headers.common.Authorization;
+                $window.localStorage.authorizationToken  =  authHeaderString;
+                $http({
+                  method: "post",
+                  url: api_config.CONSUMER_API_URL + "/oauth/token",
+                  data: "client_id=" + clientId + "&client_secret=" + clientSecret + "&redirect_uri=http://localhost/callback" + "&grant_type=authorization_code" + "&code=" + requestToken ,
+                  // headers: {
+                  //   "Authorization" : authHeaderString
+                  // }
+                })
+                    .success(function(data) {
+                        $window.localStorage.authorizationToken = 'Bearer ' + data.access_token;
+                        deferred.resolve(data);
+                    })
+                    .error(function(data, status) {
+                        deferred.reject("Problem authenticating");
+                    })
+                    .finally(function() {
+                        setTimeout(function() {
+                            browserRef.close();
+                        }, 10);
+                    });
+            }
+        });
+        browserRef.addEventListener('exit', function(event) {
+            deferred.reject("The sign in flow was canceled");
+        });
+
+        return deferred.promise;
+      },
+      clientOAuth: function clientOAuth (clientId, clientSecret, user) {
+        var deferred = $q.defer();
+        if(window.cordova) {
+          // console.log('cordova');
+            var cordovaMetadata = cordova.require("cordova/plugin_list").metadata;
+            // console.log(cordovaMetadata);
+            if(cordovaMetadata.hasOwnProperty("org.apache.cordova.inappbrowser") === true) {
+
+                var browserRef = window.open(api_config.CONSUMER_API_URL + "/oauth/authorize?client_id=" + clientId + "&redirect_uri=http://localhost/callback&response_type=code&scope=read%20write&email=" +user.email+ "&password=" + user.password, "_blank", "location=no,clearsessioncache=yes,clearcache=yes");
+                browserRef.addEventListener("loadstart", function(event) {
+                    if((event.url).indexOf("http://localhost/callback") === 0) {
+                        var requestToken = (event.url).split("code=")[1];
+                        $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+                        var authHeaderString = 'Basic ' + btoa(clientId + ':' + clientSecret);
+                        delete $http.defaults.headers.common.Authorization;
+                        $window.localStorage.authorizationToken  =  authHeaderString;
+                        $http({
+                          method: "post",
+                          url: api_config.CONSUMER_API_URL + "/oauth/token",
+                          data: "client_id=" + clientId + "&client_secret=" + clientSecret + "&redirect_uri=http://localhost/callback" + "&grant_type=authorization_code" + "&code=" + requestToken ,
+                          // headers: {
+                          //   "Authorization" : authHeaderString
+                          // }
+                        })
+                            .success(function(data) {
+                                $window.localStorage.authorizationToken = 'Bearer ' + data.access_token;
+                                deferred.resolve(data);
+                            })
+                            .error(function(data, status) {
+                                deferred.reject("Problem authenticating");
+                            })
+                            .finally(function() {
+                                setTimeout(function() {
+                                    browserRef.close();
+                                }, 10);
+                            });
+                    }
+                });
+                browserRef.addEventListener('exit', function(event) {
+                    deferred.reject("The sign in flow was canceled");
+                });
+            } else {
+                deferred.reject("Could not find InAppBrowser plugin");
+            }
+        } else {
+            deferred.reject("Cannot authenticate via a web browser");
+        }
+        return deferred.promise;
+      }
     };
   }]);
 

@@ -4,27 +4,7 @@ var app = angular.module('controllers', []);
 
 
 app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider) {
-  $stateProvider
 
-    .state('splash', {
-      url: "/splash",
-      abstract: true,
-      views: {
-        'noHeaderContent' : {
-          templateUrl: "full-screen.html",
-        }
-      }
-    })
-
-    .state('splash.welcome', {
-      url: "/welcome",
-      views: {
-        'fullContent@splash' :{
-          templateUrl: "templates/splash-first.html",
-          controller: 'SplashCtrl'
-        }
-      }
-    });
 });
 
 app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices) {
@@ -56,18 +36,22 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
 app.controller('UploaderCtrl', ['$scope', 'cordovaServices', function ($scope, cordovaServices) {
 
   $scope.open_chooser = function () {
-    fileChooser.open(function(uri) {
+    if (fileChooser) {
+      fileChooser.open(function(uri) {
 
-      cordovaServices.returnFilePathName(uri, function (fileMeta) {
-        cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
-          console.log(fileObject);
-          $scope.$flow.addFile(fileObject);
+        cordovaServices.returnFilePathName(uri, function (fileMeta) {
+          cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
+            console.log(fileObject);
+            $scope.$flow.addFile(fileObject);
+          });
         });
-      });
 
-    }, function (err) {
-      console.log(err);
-    });
+      }, function (err) {
+        console.log(err);
+      });
+    } else {
+
+    }
   };
 }]);
 

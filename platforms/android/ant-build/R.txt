@@ -13,8 +13,11 @@ int attr efp__selected_item_background 0x7f010000
 int color efp__header_button_pressed_color 0x7f040001
 int color efp__header_divider_color 0x7f040002
 int color efp__header_line_color 0x7f040000
-int drawable icon 0x7f020000
-int drawable screen 0x7f020001
+int drawable ic_action_next_item 0x7f020000
+int drawable ic_action_previous_item 0x7f020001
+int drawable ic_action_remove 0x7f020002
+int drawable icon 0x7f020003
+int drawable screen 0x7f020004
 int string activity_name 0x7f050002
 int string app_name 0x7f050000
 int string efp__action_deselect 0x7f050008
