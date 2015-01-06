@@ -1,0 +1,186 @@
+// The path for our ionicons font files, relative to the built CSS in www/css
+$ionicons-font-path: "../lib/ionic/fonts" !default;
+
+@import "font";
+
+// Include all of Ionic
+@import "../lib/ionic/scss/ionic";
+
+$theme-color: #e8bd33;
+$nav-link-bg-color: #858585;
+$nav-link-bg-color-alt: #a6a7a9;
+$nav-bg-color: #484f57;
+$bg-sub: #dfd8db;
+$bg-main: white;
+$dark-blue: #060030;
+
+$norm-text: 13.5px;
+$two-text: $norm-text * 2;
+
+@import "spinner";
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "latobold";
+}
+
+p, span {
+  font-family: "open_sansregular";
+}
+
+.bar .title {
+  font-size: $two-text;
+  font-family: "bebas_neueregular";
+}
+
+.large-icon {
+  font-size: 15em;
+  text-align: center;
+}
+
+.menu {
+  background-color: $nav-bg-color;
+  color: #fff;
+}
+
+.menu .item {
+  border-top: solid 1px #484F57;
+  border-bottom: solid 1px #484F57;
+}
+
+.menu .item i.icon {
+  font-size: 30px;
+  margin-right: 10px;
+}
+
+.menu .item a {
+  color: white;
+  font-size: $norm-text;
+  font-family: "latoregular";
+}
+
+.menu .list .item a:nth-child(odd) {
+  background-color: $nav-link-bg-color;
+}
+
+.menu .list .item a:nth-child(even) {
+  background-color: $nav-link-bg-color-alt;
+}
+
+.menu .list .item.active a {
+  background-color: $energized;
+}
+
+.view-content {
+  background-color: #ffffff;
+}
+
+a.profile-photo img {
+  /* width: 100%; */
+  border: solid 1px rgb(126, 126, 126);
+  border-radius: 5px;
+  background-size: cover;
+  height: 33px;
+}
+
+.u-b {
+  line-height: 0;
+  padding-left: 10px;
+}
+
+.u-b h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.5em;
+}
+
+.u-b span {
+  color: $nav-bg-color;
+  font-size: 11px;
+}
+
+.button-dark-blue {
+  background-color: $dark-blue;
+  color: white;
+}
+
+.modal-backdrop.active, .theme-bg {
+  background-color: #e5ac00;
+}
+
+.modal-logo h1 {
+  font-family: "dimitriregular";
+  text-align: center;
+  color: white;
+  text-shadow: 0 1px 1px #000;
+  font-size: 6em;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.login-form {
+  background: #E5AC00;
+}
+
+.login-form .span-text {
+  background-color: transparent;
+  text-align: center;
+  border: 0;
+  font-size: 17px;
+  font-weight: normal;
+  font-family: open_sansregular;
+}
+
+.login-form input {
+  font-family: latoregular;
+}
+
+.login-form input::-webkit-input-placeholder {
+  color: #fff;
+}
+
+.login-form input:-moz-placeholder {
+  /* Firefox 18- */
+  color: #fff;
+}
+
+.login-form input::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #fff;
+}
+
+.login-form input:-ms-input-placeholder {
+  color: #fff;
+}
+
+.login-form button {
+  font-weight: bold;
+  border-radius: 0;
+}
+
+.button-dark-blue {
+  border-color: #3399ff;
+  background-color: #2b5797;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+
+.rt {
+  text-align: right;
+}
+
+.lt {
+  text-align: left;
+}
+
+.login-form .item {
+  background-color: transparent;
+  border-top: 0px;
+  border-bottom: solid 1px rgba(255, 255, 255, 0.46);
+}
+
+.no-pm {
+  margin: 0;
+  padding: 0;
+}

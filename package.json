@@ -1,0 +1,33 @@
+{
+  "name": "ixit-mobile",
+  "version": "0.0.2",
+  "description": "        Upload and share files. Phone Media and Document Backup.",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "^0.4.5"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-exec": "^0.4.6",
+    "grunt-preprocess": "^4.1.0",
+    "preprocess": "^2.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/k0d3d/ixitmobile"
+  },
+  "keywords": [
+    "filesharing",
+    "backup",
+    "upload"
+  ],
+  "author": "Mykel Koded",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/k0d3d/ixitmobile/issues"
+  },
+  "homepage": "https://github.com/k0d3d/ixitmobile"
+}

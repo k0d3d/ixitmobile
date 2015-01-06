@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.ixit.mobile" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>IXIT</name>
+    <description>
+        Upload and share files. Phone Media and Document Backup.
+        All very easy.
+    </description>
+    <author email="koded@i-x.it" href="http://about.i-x.it">
+        Michael "Koded" Rhema
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="webviewbounce" value="false" />
+    <preference name="UIWebViewBounce" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,root" />
+    <preference name="SplashScreen" value="spl" />
+    <preference name="SplashScreenDelay" value="10000" />
+
+    <!-- Don't store local date in an iCloud backup. Turn this to "cloud" to enable storage
+         to be sent to iCloud. Note: enabling this could result in Apple rejecting your app.
+    -->
+    <preference name="BackupWebStorage" value="none" />
+
+    <feature name="StatusBar">
+      <param name="ios-package" value="CDVStatusBar" onload="true" />
+    </feature>
+    <access origin="*" />
+    <icon src="res/icon/icon.png" />
+    <platform name="android">
+        <icon src="res/icon/android/icon-36-ldpi.png"  density="ldpi" />
+        <icon src="res/icon/android/icon-48-mdpi.png"  density="mdpi" />
+        <icon src="res/icon/android/icon-72-hdpi.png"  density="hdpi" />
+        <icon src="res/icon/android/icon-96-xhdpi.png" density="xhdpi" />
+
+    </platform>
+
+</widget>

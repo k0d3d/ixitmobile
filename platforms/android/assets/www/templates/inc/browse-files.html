@@ -1,0 +1,34 @@
+<ion-modal-view file-browser="currentFolderView" current-dir-entries="currentDirEntries">
+  <ion-header-bar align-title="center" class="bar-positive" no-tap-scroll="true">
+    <div class="buttons">
+      <button class="button" ng-click="close_modal()">
+        <i class="icon ion-arrow-return-left"></i>
+      </button>
+    </div>
+    <h1 class="title">{{currentFolderView.name || 'Root'}}</h1>
+    <div class="buttons">
+      <button class="button">
+        <i class="icon ion-checkmark-round"></i>
+      </button>
+    </div>
+  </ion-header-bar>
+
+  <ion-content class="browse-files" scroll="true" has-header="false" paddin`g="false"  >
+      <ion-list>
+        <ion-item class=" item-icon-left" ng-repeat="thisDir in currentDirEntries.dir" on-tap="console.log(thisDir)">
+          <i class="icon ion-folder"></i>
+          {{thisDir.name}}
+
+        </ion-item>
+        <ion-item class=" item-checkbox item-icon-left" ng-repeat="thisFile in currentDirEntries.files" on-tap="selectFile(thisFile)">
+          <i class="icon ion-document"></i>
+          {{thisFile.name}}
+          <label class="checkbox">
+            <input type="checkbox">
+          </label>
+
+        </ion-item>
+      </ion-list>
+
+  </ion-content>
+</ion-modal-view>

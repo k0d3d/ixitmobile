@@ -1,0 +1,29 @@
+
+  <ion-content class="has-header view-content">
+    <div class="row " ng-hide="userRootCabinet.length">
+      <div id="folderName" class="col">
+        <div class="col-box">
+            <p class="large-icon">
+              <i class="icon ion-upload"></i>
+            </p>
+            <p style="text-align: center"> No uploaded files here.</p>
+          <button class="button button-positive button-block button-small icon ion-plus" flow-btn>
+            Choose Files
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row" ng-show="userRootCabinet.length">
+      <div class="list">
+
+          <a class="item item-avatar" href="#" ng-repeat="f in userRootCabinet">
+            <img ng-src="{{f.filename | fileicon}}" img-cache>
+            <h2>{{f.filename}}</h2>
+            <p>{{f.size | formatFileSize}}</p>
+          </a>
+
+          ...
+
+      </div>
+    </div>
+  </ion-content>

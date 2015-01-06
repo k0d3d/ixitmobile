@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>IXIT Mobile</title>
+
+    <!-- <link href="lib/ionic/css/ionic.css" rel="stylesheet"> -->
+    <link href="css/app.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
+    <script src="lib/angular-http-auth/src/http-auth-interceptor.js"></script>
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="js/vendor/imgcache.js"></script>
+    <script src="js/vendor/ng-flow-standalone.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+    <script src="js/sharedlibs/settings.js"></script>
+    <script src="js/modules/controllers.js"></script>
+    <script src="js/modules/auth.js"></script>
+    <script src="js/sharedlibs/directives.js"></script>
+    <script src="js/sharedlibs/services.js"></script>
+  </head>
+
+  <body ng-app="ixitApp">
+    <ion-side-menus flow-init ng-controller="MainCtrl">
+
+      <ion-pane ion-side-menu-content resize-content-div drag-content="appState.isSplash">
+        <ion-nav-bar class="bar-energized nav-title-slide-ios7">
+          <ion-nav-back-button class="button-clear"><i class="icon ion-ios7-arrow-back"></i> Back</ion-nav-back-button>
+
+        </ion-nav-bar>
+        <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
+      </ion-pane>
+
+      <ion-side-menu side="left">
+        <header class="bar bar-header bar-energized">
+          <div class="u-b">
+            <h3>Richard Ugly</h3>
+            <span>richard@i-x.it</span>
+          </div>
+        </header>
+        <ion-content class="has-header">
+          <ion-list>
+            <ion-item nav-clear menu-close ng-href="#/app/upload" active-href class=" item-icon-left">
+              <i class="icon ion-upload"></i>
+              Uploads
+              <span class="badge badge-stable">{{$flow.files.length}}</span>
+            </ion-item>
+            <ion-item nav-clear menu-close ng-href="#/app/files" active-href class=" item-icon-left">
+              <i class="icon ion-filing"></i>
+              My Cabinet
+            </ion-item>
+            <ion-item nav-clear menu-close ng-href="#/app/account" active-href class=" item-icon-left">
+              <i class="icon ion-person "></i>
+              My Account
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-side-menu>
+    </ion-side-menus>
+
+  </body>
+</html>

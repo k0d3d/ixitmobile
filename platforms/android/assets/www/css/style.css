@@ -1,0 +1,64 @@
+/* Empty. Add your own CSS if you like */
+/*body {
+  cursor: url('http://ionicframework.com/img/finger.png'), auto;
+}*/
+.col-box {
+  width: 260px;
+  margin: 0 auto;
+}
+.icon-box {
+padding: 10px;
+background-color: white;
+border-radius: 3px;
+border: solid 1px #B1AFAF;
+}
+
+.ex-bar {
+  margin-bottom: 5px;
+  border-bottom: solid 1px #ddd;
+}
+
+.meter {
+  width: 100%;
+  display: block;
+  height: 5px;
+  background-color: #DFD8DB;
+  margin-top: 5px;
+}
+
+.meter span {
+width: 50%;
+height: 100%;
+display: block;
+background: #3AC0FF;
+}
+
+.pre-item {
+  float: left;
+  width: 90% ;
+}
+.post-item {
+  float: right;
+  width: 20%;
+}
+.info-file-size {
+  /*float: right;*/
+}
+.queue-file-type-icon {
+  width: 30px;
+}
+@media (min-width: 768px) {
+  .menu-content {
+     -webkit-transform: translate3d(270px, 0px, 0px) !important;
+     width: ~"calc(100% - 270px)" !important;
+  }
+
+  .menu {
+      z-index: 2 !important;
+      box-shadow: -1px 0 2px rgba(0,0,0,.2),1px 0 2px rgba(0,0,0,.2);
+   }
+
+  .bar-header button.ion-navicon {
+      display: none;
+   }
+}

@@ -1,0 +1,15 @@
+// The path for our ionicons font files, relative to the built CSS in www/css
+$ionicons-font-path: "../lib/ionic/fonts" !default;
+
+// Include all of Ionic
+@import "../www/lib/ionic/scss/ionic";
+
+$theme-color: #e8bd33;
+$nav-link-bg-color: #858585;
+$nav-link-bg-color-alt: #a6a7a9;
+$nav-bg-color: #484f57;
+$bg-sub: #dfd8db;
+$bg-main: white;
+
+$norm-text: 22px;
+$two-text: $norm-text * 2;
