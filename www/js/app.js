@@ -348,7 +348,9 @@ app.controller('AppCtrl',
   });
 
   $scope.$on('auth-loginRequired', function(e, rejection) {
-    $state.go('app.login');
+    if (!$state.is('app.login')) {
+      $state.go('app.login');
+    }
   });
 
   $scope.$on('event:auth-loginConfirmed', function() {

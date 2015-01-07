@@ -4,7 +4,6 @@
 
   }]);
   app.controller('RegisterLoginCtrl', function($scope, $http, $state, AuthenticationService, $ionicPopup, $window, $ionicPlatform) {
-
     $ionicPlatform.onHardwareBackButton(function () {
       return false;
     });
@@ -31,7 +30,19 @@
             $scope.auth_message = res.message;
           });
         } else {
-          $scope.$emit('event:auth-loginConfirmed');
+          $ionicPopup.show({
+              template: '<p>We have registered your IXIT account successfully</p>',
+              title: 'Welcome',
+              buttons: [
+                {
+                  text: '<b>Login Now</b>',
+                  type: 'button-positive',
+                  onTap: function(e) {
+                    $state.go('app.login');
+                  }
+                }
+              ]
+            });
         }
       });
     };

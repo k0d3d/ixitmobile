@@ -141,6 +141,7 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/com.borismus.webintent \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.file-transfer \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.splashscreen \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/com.brodysoft.sqlitePlugin \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.file \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/com.ionic.keyboard \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/nl.x-services.plugins.toast/www \
@@ -156,6 +157,8 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.file-transfer/www/FileTransferError.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.splashscreen/www \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.splashscreen/www/splashscreen.js \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/com.brodysoft.sqlitePlugin/www \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/com.brodysoft.sqlitePlugin/www/SQLitePlugin.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.file/www \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.file/www/FileSystem.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/plugins/org.apache.cordova.file/www/FileWriter.js \

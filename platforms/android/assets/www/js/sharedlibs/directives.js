@@ -22,8 +22,8 @@
     return {
       link: function (scope, ele, attrs) {
         function loadNReloadBG () {
-          var screenWidth = $($window).width();
-          var screenHeight = $($window).height();
+          var screenWidth = $(window).width();
+          var screenHeight = $(window).height();
 
           //is landscape
           if (screenWidth > screenHeight) {
@@ -39,9 +39,8 @@
           $(ele).height(screenHeight);
           // scope.$apply();
         }
-        // $document.addEventListener("deviceready", function () { console.log('in dire ready');}, false);
-        // document.addEventListener('deviceready', loadNReloadBG);
-        // document.addEventListener('resize', loadNReloadBG);
+        // $ionicPlatform.ready(loadNReloadBG);
+        window.addEventListener('orientationchange', loadNReloadBG);
         loadNReloadBG();
       }
     };

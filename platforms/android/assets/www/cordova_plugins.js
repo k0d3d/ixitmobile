@@ -198,6 +198,13 @@ module.exports = [
         "clobbers": [
             "WebIntent"
         ]
+    },
+    {
+        "file": "plugins/com.brodysoft.sqlitePlugin/www/SQLitePlugin.js",
+        "id": "com.brodysoft.sqlitePlugin.SQLitePlugin",
+        "clobbers": [
+            "SQLitePlugin"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -210,7 +217,8 @@ module.exports.metadata =
     "org.apache.cordova.file-transfer": "0.4.8",
     "org.apache.cordova.splashscreen": "0.3.5",
     "com.simonmacdonald.telephonenumber": "1.0.0",
-    "com.borismus.webintent": "1.0.0"
+    "com.borismus.webintent": "1.0.0",
+    "com.brodysoft.sqlitePlugin": "1.0.3"
 }
 // BOTTOM OF METADATA
 });
