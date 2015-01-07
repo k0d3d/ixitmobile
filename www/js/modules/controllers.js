@@ -23,6 +23,8 @@ app.controller('UploaderCtrl', ['$scope', '$cordovaToast', function ($scope, $co
 }]);
 
 app.controller('SplashCtrl', ['$scope', function ($scope) {
+  $scope.appState.isSplash = true;
+  $scope.appState.showHeader = false;
 
 }]);
 

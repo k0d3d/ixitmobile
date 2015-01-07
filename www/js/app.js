@@ -201,7 +201,8 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
 
 app.controller('MainCtrl', ['$scope', function ($scope) {
   $scope.appState = {
-    isSplash: true
+    isSplash: false,
+    showHeader: true
   };
 }]);
 
