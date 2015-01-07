@@ -2,6 +2,31 @@
 
 var app = angular.module('controllers', []);
 
+
+app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider) {
+  $stateProvider
+
+    .state('splash', {
+      url: "/splash",
+      abstract: true,
+      views: {
+        'menuContent' : {
+          templateUrl: "full-screen.html",
+        }
+      }
+    })
+
+    .state('splash.welcome', {
+      url: "/welcome",
+      views: {
+        'fullContent@splash' :{
+          templateUrl: "templates/splash-first.html",
+          controller: 'SplashCtrl'
+        }
+      }
+    })
+});
+
 app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabinet) {
   // userRootCabinet.then(function (res) {
   //   $scope.userRootCabinet = res;

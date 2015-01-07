@@ -18,6 +18,27 @@
     };
   }]);
 
+  app.directive('resizeSplashDiv', ['$window', function ($window) {
+    return {
+      link: function (scope, ele, attrs) {
+        $($window).on('orientationchange resize ready', function () {
+          var screenWidth = $($window).width();
+          var screenHeight = $($window).height();
+
+          //is landscape
+          if (screenWidth > screenHeight) {
+            scope.splashImg = 'splash-doc-l';
+          } else if (screenHeight > screenWidth) {
+            scope.splashImg = 'splash-doc-p';
+          }
+          scope.$apply();
+          $(ele).width(screenWidth);
+          $(ele).height(screenHeight);
+        });
+      }
+    };
+  }]);
+
   // Highlights the current active menu
   // app.directive('activeHref', ['$window', '$location', function ($window, $location) {
     // return {

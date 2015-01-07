@@ -114,17 +114,6 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         }
       }
     })
-
-    .state('app.splash', {
-      url: "/splash",
-      views: {
-        'fullContent@app' :{
-          templateUrl: "templates/splash-first.html",
-          controller: 'SplashCtrl'
-        }
-      }
-    })
-
     .state('app.upload', {
       url: "/upload",
       views: {
