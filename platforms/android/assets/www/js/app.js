@@ -16,9 +16,11 @@ var app = angular.module('ixitApp', [
   'ixitApp.config'
   ]);
 
-app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', function($ionicPlatform, $rootScope, appBootStrap) {
+app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($ionicPlatform, $rootScope, appBootStrap, $document) {
 
-  appBootStrap.loginModal();
+
+
+  document.addEventListener("deviceready", function () { console.log('in run ready');}, false);
 
   $ionicPlatform.ready(function() {
 
@@ -93,7 +95,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       url: "/app",
       abstract: true,
       views: {
-        'menuContent' : {
+        'mainContent' : {
           templateUrl: "templates/app.html",
           controller: 'AppCtrl'
         }
@@ -114,7 +116,6 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         }
       }
     })
-
     .state('app.upload', {
       url: "/upload",
       views: {
@@ -128,9 +129,20 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       url: "/auth/login",
       views: {
         'viewContent@app' :{
-          controller: function ($scope) {
-            $scope.loginModal.show();
-          }
+          controller: ['$ionicModal', function ($ionicModal) {
+            $ionicModal.fromTemplateUrl('templates/auth/login.html',
+              {
+                // scope: $scope,
+                animation: 'slide-in-up',
+                focusFirstInput: true,
+                backdropClickToClose: false,
+                hardwareBackButtonClose: false
+              }
+            ).then(function (modal) {
+              modal.show();
+            });
+            // appBootStrap.loginModal.show();
+          }]
         }
       }
     })
@@ -188,6 +200,11 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
     };
   }]);
 });
+
+app.controller('MainCtrl', ['$scope', function ($scope) {
+
+}]);
+
 app.controller('AppCtrl',
   [
   '$scope',
@@ -283,12 +300,12 @@ app.controller('AppCtrl',
     }
   };
 
-  $scope.loginModal = appBootStrap.loginModal;
+  // $scope.loginModal = appBootStrap.loginModal;
 
   //checks if there is an authorization token on
   //our localStorage
   if (!$window.localStorage.authorizationToken) {
-    $state.go('app.login');
+    $state.go('splash.welcome');
   }
 
   $scope.$on('ds::connectionLost', function () {

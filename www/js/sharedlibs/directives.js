@@ -18,23 +18,31 @@
     };
   }]);
 
-  app.directive('resizeSplashDiv', ['$window', function ($window) {
+  app.directive('resizeSplashDiv', ['$window', '$ionicPlatform', function ($window, $ionicPlatform) {
     return {
       link: function (scope, ele, attrs) {
-        $($window).on('orientationchange resize ready', function () {
+        function loadNReloadBG () {
           var screenWidth = $($window).width();
           var screenHeight = $($window).height();
 
           //is landscape
           if (screenWidth > screenHeight) {
             scope.splashImg = 'splash-doc-l';
+            scope.splashImgIsP = false;
+            scope.splashActionDiv = {'width': '306px', 'margin-left': '-153px'};
           } else if (screenHeight > screenWidth) {
             scope.splashImg = 'splash-doc-p';
+            scope.splashImgIsP = true;
+            scope.splashActionDiv = {'width': '154px', 'margin-left': '-77px'};
           }
-          scope.$apply();
           $(ele).width(screenWidth);
           $(ele).height(screenHeight);
-        });
+          // scope.$apply();
+        }
+        // $document.addEventListener("deviceready", function () { console.log('in dire ready');}, false);
+        // document.addEventListener('deviceready', loadNReloadBG);
+        // document.addEventListener('resize', loadNReloadBG);
+        loadNReloadBG();
       }
     };
   }]);

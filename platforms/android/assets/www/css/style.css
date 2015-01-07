@@ -47,6 +47,26 @@ background: #3AC0FF;
 .queue-file-type-icon {
   width: 30px;
 }
+.splash-doc {
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+}
+.splash-doc-p {
+  background-image: url('../img/ixit-splash.jpg');
+}
+.splash-doc-l {
+  background-image: url('../img/ixit-splash-landscape.jpg');
+}
+.splash-actions {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  margin-left: -77px;
+}
+.button-150 {
+  width: 150px;
+}
 @media (min-width: 768px) {
   .menu-content {
      -webkit-transform: translate3d(270px, 0px, 0px) !important;

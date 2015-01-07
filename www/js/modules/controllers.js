@@ -10,7 +10,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       url: "/splash",
       abstract: true,
       views: {
-        'menuContent' : {
+        'noHeaderContent' : {
           templateUrl: "full-screen.html",
         }
       }
@@ -24,7 +24,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
           controller: 'SplashCtrl'
         }
       }
-    })
+    });
 });
 
 app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabinet) {
@@ -48,8 +48,7 @@ app.controller('UploaderCtrl', ['$scope', '$cordovaToast', function ($scope, $co
 }]);
 
 app.controller('SplashCtrl', ['$scope', function ($scope) {
-  $scope.appState.isSplash = true;
-  $scope.appState.showHeader = false;
+
 
 }]);
 
