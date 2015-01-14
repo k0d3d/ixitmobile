@@ -198,6 +198,20 @@ module.exports = [
         "clobbers": [
             "WebIntent"
         ]
+    },
+    {
+        "file": "plugins/com.brodysoft.sqlitePlugin/www/SQLitePlugin.js",
+        "id": "com.brodysoft.sqlitePlugin.SQLitePlugin",
+        "clobbers": [
+            "SQLitePlugin"
+        ]
+    },
+    {
+        "file": "plugins/com.megster.cordova.FileChooser/www/fileChooser.js",
+        "id": "com.megster.cordova.FileChooser.FileChooser",
+        "clobbers": [
+            "fileChooser"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -210,7 +224,10 @@ module.exports.metadata =
     "org.apache.cordova.file-transfer": "0.4.8",
     "org.apache.cordova.splashscreen": "0.3.5",
     "com.simonmacdonald.telephonenumber": "1.0.0",
-    "com.borismus.webintent": "1.0.0"
+    "com.borismus.webintent": "1.0.0",
+    "com.brodysoft.sqlitePlugin": "1.0.3",
+    "com.appgyver.plugin.Echo": "1.0.0",
+    "com.megster.cordova.FileChooser": "0.0.0"
 }
 // BOTTOM OF METADATA
 });

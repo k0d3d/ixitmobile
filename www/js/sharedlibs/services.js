@@ -279,20 +279,7 @@
   }]);
   app.factory('appBootStrap', ['$ionicModal', function ($ionicModal) {
     return {
-      loginModal : function () {
-        var self = this;
-        $ionicModal.fromTemplateUrl('templates/auth/login.html',
-          {
-            // scope: $scope,
-            animation: 'slide-in-up',
-            focusFirstInput: true,
-            backdropClickToClose: false,
-            hardwareBackButtonClose: false
-          }
-        ).then(function (modal) {
-          self.loginModal = modal;
-        });
-      }
+      activeModal: null
     };
   }]);
 

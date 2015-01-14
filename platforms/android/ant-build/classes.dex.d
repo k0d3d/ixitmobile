@@ -7,11 +7,13 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/ixit/mobile/R$xml.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/ixit/mobile/CordovaApp.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/simonmacdonald/cordova/plugins/TelephoneNumber.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/appgyver/plugin/Echo.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/borismus/webintent/WebIntent.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/ionic/keyboard/IonicKeyboard$2.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/ionic/keyboard/IonicKeyboard$1.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/ionic/keyboard/IonicKeyboard.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/ionic/keyboard/IonicKeyboard$3.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/com/megster/cordova/FileChooser.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/apache/cordova/splashscreen/SplashScreen.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/apache/cordova/file/FileUtils$1.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/apache/cordova/file/NoModificationAllowedException.class \
@@ -69,6 +71,12 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/apache/cordova/filetransfer/FileTransfer$5.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/apache/cordova/filetransfer/FileTransfer$RequestContext.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/apache/cordova/device/Device.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin$Action.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin$DBRunner.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin$QueryType.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin$1.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin$DBQuery.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/nl/xservices/plugins/Toast.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/nl/xservices/plugins/Toast$1.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/dexedLibs/classes-25750950ab51f4ebf7d1bfa1c81656b2.jar \

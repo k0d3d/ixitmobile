@@ -3,8 +3,7 @@
   app.controller('RegisterCtrl', ['$scope', function ($scope) {
 
   }]);
-  app.controller('RegisterLoginCtrl', function($scope, $http, $state, AuthenticationService, $ionicPopup, $window, $ionicPlatform) {
-
+  app.controller('RegisterLoginCtrl', function($scope, $http, $state, AuthenticationService, $ionicPopup, $window, $ionicPlatform, $location, $timeout) {
     $ionicPlatform.onHardwareBackButton(function () {
       return false;
     });
@@ -31,15 +30,29 @@
             $scope.auth_message = res.message;
           });
         } else {
-          $scope.$emit('event:auth-loginConfirmed');
+          $ionicPopup.show({
+              template: '<p>We have registered your IXIT account successfully</p>',
+              title: 'Welcome',
+              buttons: [
+                {
+                  text: '<b>Login Now</b>',
+                  type: 'button-positive',
+                  onTap: function(e) {
+                    $state.go('app.login');
+                  }
+                }
+              ]
+            });
         }
       });
     };
 
     $scope.$on('event:auth-loginConfirmed', function() {
-     $scope.username = null;
-     $scope.password = null;
-     $state.go('app.files');
+      $scope.username = null;
+      var url=$location.absUrl() + '#/app/files';
+      $timeout(function() {
+        $window.location.href=url;
+      });
     });
 
     $scope.$on('event:auth-login-failed', function(e, status) {

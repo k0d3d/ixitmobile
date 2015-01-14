@@ -16,9 +16,7 @@ var app = angular.module('ixitApp', [
   'ixitApp.config'
   ]);
 
-app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', function($ionicPlatform, $rootScope, appBootStrap) {
-
-  appBootStrap.loginModal();
+app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($ionicPlatform, $rootScope, appBootStrap, $document) {
 
   $ionicPlatform.ready(function() {
 
@@ -65,13 +63,13 @@ app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', function($ionicPlatform
             // url is the value of EXTRA_TEXT
         }, function() {
             // There was no extra supplied.
-            console.log('Nothing sent in');
+            // console.log('Nothing sent in');
         }
     );
     window.plugins.webintent.getUri(function(url) {
       if(url !== "") {
         // url is the url the intent was launched with
-        console.log(url);
+        // console.log(url);
       }
     });
     window.plugins.webintent.onNewIntent(function(url) {
@@ -86,14 +84,14 @@ app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', function($ionicPlatform
 
 }]);
 
-app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider) {
+app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider, api_config) {
   $stateProvider
 
     .state('app', {
       url: "/app",
       abstract: true,
       views: {
-        'menuContent' : {
+        'mainContent' : {
           templateUrl: "templates/app.html",
           controller: 'AppCtrl'
         }
@@ -114,17 +112,6 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         }
       }
     })
-
-    .state('app.splash', {
-      url: "/splash",
-      views: {
-        'fullContent@app' :{
-          templateUrl: "templates/splash-first.html",
-          controller: 'SplashCtrl'
-        }
-      }
-    })
-
     .state('app.upload', {
       url: "/upload",
       views: {
@@ -138,9 +125,21 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       url: "/auth/login",
       views: {
         'viewContent@app' :{
-          controller: function ($scope) {
-            $scope.loginModal.show();
-          }
+          controller: ['$ionicModal', 'appBootStrap', function ($ionicModal, appBootStrap) {
+            $ionicModal.fromTemplateUrl('templates/auth/login.html',
+              {
+                // scope: $scope,
+                animation: 'slide-in-up',
+                focusFirstInput: true,
+                backdropClickToClose: false,
+                hardwareBackButtonClose: false
+              }
+            ).then(function (modal) {
+              appBootStrap.activeModal = modal;
+              appBootStrap.activeModal.show();
+            });
+            // appBootStrap.loginModal.show();
+          }]
         }
       }
     })
@@ -155,7 +154,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
     });
 
     flowFactoryProvider.defaults = {
-        target:'http://localhost:3001/upload',
+        target: api_config.FILEVAULT_API_URL + '/upload',
         chunkSize:1*1024*1024,
         simultaneousUploads:4,
         testChunks:true,
@@ -170,15 +169,8 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         maxChunkRetries: 1,
         chunkRetryInterval: 5000,
     };
-    // You can also set default events:
-    flowFactoryProvider.on('progress', function (event) {
-      // ...
-      // console.log('progress', arguments);
-    });
-    flowFactoryProvider.on('error', function () {
-      // ...
-      console.log(arguments);
-    });
+
+
 
 
   // if none of the above states are matched, use this as the fallback
@@ -189,7 +181,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
   $httpProvider.interceptors.push(['$rootScope', '$q', function($rootScope, $q) {
     return {
       responseError: function(response) {
-        if (response.status === 401) {
+        if (response.status === 403) {
           $rootScope.$broadcast('auth-loginRequired');
         }
         // otherwise, default behaviour
@@ -199,10 +191,32 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
   }]);
 });
 
-app.controller('MainCtrl', ['$scope', function ($scope) {
-  $scope.appState = {
-    isSplash: true
-  };
+app.controller('MainCtrl', ['$scope', '$cordovaToast', function ($scope, $cordovaToast) {
+  $scope.$on('flow::filesAdded', function (e, $flow, file) {
+    if (window.cordova) {
+      $cordovaToast.showShortBottom('Added '+ arguments[2].length + ' file(s) to upload queue' );
+    }
+  });
+
+  // You can also set default events:
+  $scope.$on('flow::progress', function (event) {
+    // ...
+    // console.log('progress', arguments);
+  });
+  $scope.$on('flow::error', function () {
+    // ...
+  });
+
+  // You can also set default events:
+  $scope.$on('flow::fileSuccess', function (e, $flow, file, message) {
+    if (message.indexOf('ixid') < 0) {
+      file.error = true;
+      return false;
+    }
+    var o = JSON.parse(message);
+    file.ixid = o.ixid;
+  });
+
 }]);
 
 app.controller('AppCtrl',
@@ -225,10 +239,6 @@ app.controller('AppCtrl',
   $scope.currentDirEntries = {
     dir: [],
     files: []
-  };
-
-  $scope.appState = {
-    isSplash: false
   };
 
   // $scope.$watch('isConnected', function (n) {
@@ -304,12 +314,12 @@ app.controller('AppCtrl',
     }
   };
 
-  $scope.loginModal = appBootStrap.loginModal;
+  // $scope.loginModal = appBootStrap.loginModal;
 
   //checks if there is an authorization token on
   //our localStorage
   if (!$window.localStorage.authorizationToken) {
-    $state.go('app.login');
+    $state.go('splash.welcome');
   }
 
   $scope.$on('ds::connectionLost', function () {
@@ -352,11 +362,13 @@ app.controller('AppCtrl',
   });
 
   $scope.$on('auth-loginRequired', function(e, rejection) {
-    $state.go('app.login');
+    if (!$state.is('app.login')) {
+      $state.go('app.login');
+    }
   });
 
   $scope.$on('event:auth-loginConfirmed', function() {
-    $scope.loginModal.hide();
+    appBootStrap.activeModal.hide();
   });
   $scope.$on('event:auth-logout-complete', function() {
     $state.go('app.home', {}, {reload: true, inherit: false});
@@ -365,7 +377,7 @@ app.controller('AppCtrl',
 
   //Be sure to cleanup the modal by removing it from the DOM
   $scope.$on('$destroy', function() {
-    appBootStrap.loginModal.remove();
+    appBootStrap.activeModal.remove();
     $scope.fileBrowser.remove();
     $timeout.cancel(connection);
   });
