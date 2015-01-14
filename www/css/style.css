@@ -15,7 +15,6 @@ border: solid 1px #B1AFAF;
 
 .ex-bar {
   margin-bottom: 5px;
-  border-bottom: solid 1px #ddd;
 }
 
 .meter {
@@ -35,11 +34,20 @@ background: #3AC0FF;
 
 .pre-item {
   float: left;
-  width: 90% ;
+  width: 100% ;
 }
+
+.upload-props span{
+border-right: solid 1px #ddd;
+padding: 2px 1px;
+min-width: 50%;
+display: inline-block;
+align-items: center;
+}
+
 .post-item {
   float: right;
-  width: 20%;
+  width: 100%;
 }
 .info-file-size {
   /*float: right;*/
@@ -67,6 +75,33 @@ background: #3AC0FF;
 .button-150 {
   width: 150px;
 }
+.post-item .icon {
+  left: 0;
+  position: relative;
+}
+.actbtns, .actstats {
+  float: left;
+  width: 50%
+}
+.actbtns .icon{
+  font-size: 11px
+}
+.actstats .icon{
+  font-size: 20px;
+  float: left;
+  color: #A7A7A7;
+}
+.actstats span{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 50%;
+}
+.u-l-i {
+  padding-bottom: 0;
+  border-bottom: solid 2px #434343;
+}
+
 @media (min-width: 768px) {
   .menu-content {
      -webkit-transform: translate3d(270px, 0px, 0px) !important;

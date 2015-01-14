@@ -278,7 +278,9 @@
     };
   }]);
   app.factory('appBootStrap', ['$ionicModal', function ($ionicModal) {
-    return {};
+    return {
+      activeModal: null
+    };
   }]);
 
 })();

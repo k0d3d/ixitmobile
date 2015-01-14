@@ -36,15 +36,34 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
   if (userRootCabinet) {
     $scope.userRootCabinet = userRootCabinet.data;
   }
+
+  $scope.open_chooser = function () {
+    fileChooser.open(function(uri) {
+      window.resolveLocalFileSystemURL(uri, function (fileEntry) {
+        fileEntry.file(function (fileObject) {
+          console.log(fileObject);
+          $scope.$flow.addFile(fileObject);
+        });
+      }, function (err) {
+        console.log(err);
+      });
+    });
+  };
 });
 
-app.controller('UploaderCtrl', ['$scope', '$cordovaToast', function ($scope, $cordovaToast) {
+app.controller('UploaderCtrl', ['$scope', function ($scope) {
+  $scope.open_chooser = function () {
+    fileChooser.open(function(uri) {
+      window.resolveLocalFileSystemURL(uri, function (fileEntry) {
+        fileEntry.file(function (fileObject) {
+          $scope.$flow.addFile(fileObject);
+        });
+      }, function (err) {
+        console.log(err);
+      });
+    });
+  };
 
-  $scope.$flow.on('filesAdded', function (file, event) {
-    if (window.cordova) {
-      $cordovaToast.showShortBottom('Added '+ file.length + 'file(s) to upload queue' );
-    }
-  });
 }]);
 
 app.controller('SplashCtrl', ['$scope', function ($scope) {
@@ -56,8 +75,8 @@ app.filter('hideSystemFiles', function () {
   return function (obj) {
     return (obj.name.indexOf('.') === 0) ? false : true;
   };
-})
-.filter('formatFileSize', function(){
+});
+app.filter('formatFileSize', function(){
   return function(bytes){
     if (typeof bytes !== 'number') {
       return '';
@@ -70,16 +89,21 @@ app.filter('hideSystemFiles', function () {
     }
     return (bytes / 1000).toFixed(2) + ' KB';
   };
-})
-.filter('moment', function(){
+});
+app.filter('moment', function(){
   return function(time){
-    var m = moment(time);
-    return m.fromNow();
+    if (time == 'Infinity') {
+      return '--';
+    } else {
+      var m = moment(time);
+      return m.fromNow();
+    }
   };
-})
-.filter('fileicon', ['api_config', function (api_config) {
+});
+app.filter('fileicon', ['api_config', function (api_config) {
   return function (str) {
-    return api_config.CONSUMER_API_URL + '/img/filetype/' + str.split('.').pop() + '.png';
+    console.log(str);
+    return './img/filetype/' + str.split('/').pop() + '.png';
   };
 }])
 ;

@@ -30,10 +30,24 @@
     <feature name="SQLitePlugin">
         <param name="android-package" value="org.pgsqlite.SQLitePlugin" />
     </feature>
+    <plugins>
+        <plugin name="Echo" value="com.appgyver.plugin.Echo" />
+    </plugins>
+    <feature name="FileChooser">
+        <param name="android-package" value="com.megster.cordova.FileChooser" />
+    </feature>
     <icon density="ldpi" src="res/icon/android/icon-36-ldpi.png" />
     <icon density="mdpi" src="res/icon/android/icon-48-mdpi.png" />
     <icon density="hdpi" src="res/icon/android/icon-72-hdpi.png" />
     <icon density="xhdpi" src="res/icon/android/icon-96-xhdpi.png" />
+    <splash density="land-hdpi" src="res/screen/android/spl-hdpi-landscape.png" />
+    <splash density="land-ldpi" src="res/screen/android/spl-ldpi-landscape.png" />
+    <splash density="land-mdpi" src="res/screen/android/spl-mdpi-landscape.png" />
+    <splash density="land-xhdpi" src="res/screen/android/spl-xhdpi-landscape.png" />
+    <splash density="port-hdpi" src="res/screen/android/spl-hdpi-portrait.png" />
+    <splash density="port-ldpi" src="res/screen/android/spl-ldpi-portrait.png" />
+    <splash density="port-mdpi" src="res/screen/android/spl-mdpi-portrait.png" />
+    <splash density="port-xhdpi" src="res/screen/android/spl-xhdpi-portrait.png" />
     <name>IXIT</name>
     <description>
         Upload and share files. Phone Media and Document Backup.
@@ -48,8 +62,7 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="AndroidExtraFilesystems" value="files,files-external,documents,sdcard,cache,cache-external,root" />
     <preference name="SplashScreen" value="spl" />
-    <preference name="SplashScreenDelay" value="10000" />
-    <preference name="BackupWebStorage" value="none" />
+    <preference name="SplashScreenDelay" value="100000" />
     <access origin="*" />
     <icon src="res/icon/icon.png" />
 </widget>

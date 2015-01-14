@@ -6,25 +6,8 @@
   </ion-nav-buttons>
   <ion-content class="has-header view-content">
     <div class="list list-inset" ng-show="$flow.files.length > 0">
-      <div class="item item-icon-left " ng-repeat="eachFile in $flow.files">
-        <div class="pre-item">
-          <div class="ex-bar">
-            <i class="icon">
-              <img ng-src="{{eachFile.name| fileicon}}" img-cache class="queue-file-type-icon">
-            </i>
-            <h2 class="info-file-name">
-              {{eachFile.name}}
-            </h2>
-            <p>
-              <span class="info-file-size">
-                0 / {{eachFile.file.size | formatFileSize}}
-              </span>
-            </p>
-          </div>
-          <div class="meter">
-            <span class="calm" style="width: 0%"></span>
-          </div>
-        </div>
+      <div upload-list-item ng-repeat="eachFile in $flow.files">
+
       </div>
     </div>
 
@@ -32,7 +15,7 @@
       <div id="folderName" class="col">
         <div class="col-box">
           <p style="text-align: center"> No files on your upload queue here.</p>
-          <button class="button button-positive button-block button-small icon ion-plus" flow-btn>
+          <button class="button button-positive button-block button-small icon ion-plus"  ng-click="open_chooser()" flow-btn>
             Choose Files
           </button>
         </div>
