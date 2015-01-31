@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    id="com.ixit.plugin.Filenamequery"
+    version="1.0.0">
+
+    <name>FilenamequeryPlugin</name>
+
+  <description>
+    Filenamequery Plugin for Steroids.js
+  </description>
+
+  <asset src="www/FilenamequeryPlugin.js" target="plugins/FilenamequeryPlugin.js" />
+
+  <engines>
+    <engine name="cordova" version=">=2.7.0" />
+  </engines>
+
+  <!-- android -->
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <plugin name="Filenamequery" value="com.ixit.plugin.Filenamequery"/>
+    </config-file>
+
+    <source-file src="src/android/com/ixit/plugin/Filenamequery.java"
+      target-dir="src/com/ixit/plugin" />
+  </platform>
+
+  <!-- ios -->
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*/plugins">
+      <plugin name="Filenamequery" value="Filenamequery" onload="true" />
+    </config-file>
+
+    <config-file target="config.xml" parent="/widget">
+      <feature name="Filenamequery">
+        <param name="ios-package" value="Filenamequery"/>
+        <param name="onload" value="true" />
+      </feature>
+    </config-file>
+
+    <header-file src="src/ios/Filenamequery.h" />
+
+    <source-file src="src/ios/Filenamequery.m" />
+
+  </platform>
+</plugin>

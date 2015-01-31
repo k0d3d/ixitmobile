@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="com.ixit.filenamequery" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>IXITFileNameQuery</name>
+    <js-module name="IXITFileNameQuery" src="www/IXITFileNameQuery.js">
+        <clobbers target="cordova.plugins.IXITFileNameQuery" />
+    </js-module>
+<platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="FileNameQuery">
+            <param name="android-package" value="com.ixit.filenamequery.FileNameQuery" />
+        </feature>
+    </config-file>
+
+  <source-file src="src/com/ixit/filenamequery/FileNameQuery.java" target-dir="src/com/ixit/filenamequery/plugin"/>
+</platform>
+</plugin>

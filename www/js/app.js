@@ -19,7 +19,6 @@ var app = angular.module('ixitApp', [
 app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($ionicPlatform, $rootScope, appBootStrap, $document) {
 
   $ionicPlatform.ready(function() {
-
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if(window.cordova && window.cordova.plugins.Keyboard) {

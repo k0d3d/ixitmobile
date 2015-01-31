@@ -43,14 +43,13 @@
                         {
                             "xml": "<feature name=\"SQLitePlugin\"><param name=\"android-package\" value=\"org.pgsqlite.SQLitePlugin\" /></feature>",
                             "count": 1
-                        }
-                    ],
-                    "plugins": [
+                        },
                         {
-                            "xml": "<plugin name=\"Echo\" value=\"com.appgyver.plugin.Echo\" />",
+                            "xml": "<feature name=\"IXITFileNameQuery\"><param name=\"android-package\" value=\"com.ixit.filenamequery.IXITFileNameQuery\" /></feature>",
                             "count": 1
                         }
                     ],
+                    "plugins": [],
                     "/widget": [
                         {
                             "xml": "<feature name=\"FileChooser\"><param name=\"android-package\" value=\"com.megster.cordova.FileChooser\" /></feature>",
@@ -79,6 +78,11 @@
                             "count": 1
                         }
                     ]
+                }
+            },
+            "res/values/strings.xml": {
+                "parents": {
+                    "/*": []
                 }
             }
         }
@@ -111,10 +115,13 @@
         "com.brodysoft.sqlitePlugin": {
             "PACKAGE_NAME": "com.ixit.mobile"
         },
-        "com.appgyver.plugin.Echo": {
+        "com.megster.cordova.FileChooser": {
             "PACKAGE_NAME": "com.ixit.mobile"
         },
-        "com.megster.cordova.FileChooser": {
+        "android.support.v4": {
+            "PACKAGE_NAME": "com.ixit.mobile"
+        },
+        "com.ixit.filenamequery": {
             "PACKAGE_NAME": "com.ixit.mobile"
         }
     },

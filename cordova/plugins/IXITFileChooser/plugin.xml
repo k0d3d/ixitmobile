@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+    xmlns="http://www.phonegap.com/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.ixit.filechooser"
+    version="1.0.0">
+
+    <name>IXITFileChooser</name>
+
+  <description>
+    File Chooser Plugin using AFileChooser Library
+  </description>
+
+  <js-module name="ixitFileChooser" src="www/IXITFileChooser.js">
+      <clobbers target="ixitFileChooser" />
+  </js-module>
+
+  <!-- android -->
+  <platform name="android">
+
+    <config-file target="res/xml/config.xml" parent="/widget">
+        <feature name="IXITFileChooser">
+            <param name="android-package" value="org.ixit.filechooser" />
+        </feature>
+    </config-file>
+
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+        <activity
+          android:name="ru.bartwell.exfilepicker.ExFilePickerActivity"
+          android:configChanges="orientation|screenSize"
+          android:theme="@style/ExFilePickerThemeDark" />
+    </config-file>
+
+    <source-file src="src/ru/bartwell/exfilepicker/ExFilePicker.java" target-dir="src/ru/bartwell/exfilepicker/plugin"/>
+    <source-file src="src/ru/bartwell/exfilepicker/ExFilePickerActivity.java" target-dir="src/ru/bartwell/exfilepicker/plugin"/>
+    <source-file src="src/ru/bartwell/exfilepicker/ExFilePickerParcelObject.java" target-dir="src/ru/bartwell/exfilepicker/plugin"/>
+    <source-file src="src/org/ixit/filechooser/IXITFileChooser.java" target-dir="src/org/ixit/filechooser/plugin"/>
+    <source-file src="libs/android-support-v4.jar" target-dir="libs" framework="true" />
+  </platform>
+</plugin>

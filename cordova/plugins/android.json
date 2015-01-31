@@ -1,0 +1,22 @@
+{
+    "prepare_queue": {
+        "installed": [
+            {
+                "plugin": "com.ixit.mobile.filechooser",
+                "vars": {},
+                "topLevel": true
+            },
+            {
+                "plugin": "com.ixit.mobile.filechooser",
+                "vars": {},
+                "topLevel": true
+            }
+        ],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {},
+    "dependent_plugins": {}
+}

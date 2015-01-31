@@ -47,6 +47,8 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
       }, function (err) {
         console.log(err);
       });
+    }, function (err) {
+      console.log(err);
     });
   };
 });
@@ -54,6 +56,16 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
 app.controller('UploaderCtrl', ['$scope', function ($scope) {
   $scope.open_chooser = function () {
     fileChooser.open(function(uri) {
+      console.log(uri);
+      window.plugins.filenamequery.getFileName(uri,
+          function(url) {
+            console.log(url);
+              // url is the value of EXTRA_TEXT
+          }, function() {
+              // There was no extra supplied.
+              // console.log('Nothing sent in');
+          }
+      );
       window.resolveLocalFileSystemURL(uri, function (fileEntry) {
         fileEntry.file(function (fileObject) {
           $scope.$flow.addFile(fileObject);
@@ -61,6 +73,8 @@ app.controller('UploaderCtrl', ['$scope', function ($scope) {
       }, function (err) {
         console.log(err);
       });
+    }, function (err) {
+      console.log(err);
     });
   };
 
@@ -102,7 +116,6 @@ app.filter('moment', function(){
 });
 app.filter('fileicon', ['api_config', function (api_config) {
   return function (str) {
-    console.log(str);
     return './img/filetype/' + str.split('/').pop() + '.png';
   };
 }])

@@ -212,6 +212,13 @@ module.exports = [
         "clobbers": [
             "fileChooser"
         ]
+    },
+    {
+        "file": "plugins/com.ixit.filenamequery/www/filenamequery.js",
+        "id": "com.ixit.filenamequery.IXITFileNameQuery",
+        "clobbers": [
+            "IXITFileNameQuery"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -226,8 +233,9 @@ module.exports.metadata =
     "com.simonmacdonald.telephonenumber": "1.0.0",
     "com.borismus.webintent": "1.0.0",
     "com.brodysoft.sqlitePlugin": "1.0.3",
-    "com.appgyver.plugin.Echo": "1.0.0",
-    "com.megster.cordova.FileChooser": "0.0.0"
+    "com.megster.cordova.FileChooser": "0.0.0",
+    "android.support.v4": "21.0.1",
+    "com.ixit.filenamequery": "1.0.0"
 }
 // BOTTOM OF METADATA
 });
