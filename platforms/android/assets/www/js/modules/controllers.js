@@ -27,7 +27,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
     });
 });
 
-app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabinet) {
+app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices) {
   // userRootCabinet.then(function (res) {
   //   $scope.userRootCabinet = res;
   // });
@@ -53,31 +53,22 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
   };
 });
 
-app.controller('UploaderCtrl', ['$scope', function ($scope) {
+app.controller('UploaderCtrl', ['$scope', 'cordovaServices', function ($scope, cordovaServices) {
+
   $scope.open_chooser = function () {
     fileChooser.open(function(uri) {
-      console.log(uri);
-      window.plugins.filenamequery.getFileName(uri,
-          function(url) {
-            console.log(url);
-              // url is the value of EXTRA_TEXT
-          }, function() {
-              // There was no extra supplied.
-              // console.log('Nothing sent in');
-          }
-      );
-      window.resolveLocalFileSystemURL(uri, function (fileEntry) {
-        fileEntry.file(function (fileObject) {
+
+      cordovaServices.returnFilePathName(uri, function (fileMeta) {
+        cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
+          console.log(fileObject);
           $scope.$flow.addFile(fileObject);
         });
-      }, function (err) {
-        console.log(err);
       });
+
     }, function (err) {
       console.log(err);
     });
   };
-
 }]);
 
 app.controller('SplashCtrl', ['$scope', function ($scope) {

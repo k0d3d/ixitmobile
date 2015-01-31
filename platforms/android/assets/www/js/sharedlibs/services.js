@@ -274,6 +274,37 @@
 
         // }
         // beginBrowseForFiles(dataPath);
+      },
+      /**
+       * returns the file path from
+       * @param  {[type]}   uri [description]
+       * @param  {Function} cb  [description]
+       * @return {[type]}       [description]
+       */
+      returnFilePathName: function (uri, cb) {
+        window.plugins.filenamequery.getFileName(uri, function (data) {
+          var i = data.split('/');
+          cb({
+            fileName: i[i.length -1],
+            fullPath: data
+          });
+        }, function (err) {
+          cb(err);
+        });
+      },
+      getFileObject: function (uri, fileMeta, cb) {
+        window.resolveLocalFileSystemURL(uri, function (fileEntry) {
+
+          fileEntry.file(function (fileObject) {
+            //hack, should always return a file with its real filename and path
+            fileObject.name = (ionic.Platform.version() <= 4.3) ? fileObject.name : fileMeta.fileName;
+            cb(fileObject);
+          }, function (err) {
+            console.log('Error creating file object');
+          });
+        }, function (err) {
+          cb(err);
+        });
       }
     };
   }]);
