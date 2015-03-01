@@ -2,11 +2,6 @@
 
 var app = angular.module('controllers', []);
 
-
-app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider) {
-
-});
-
 app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices) {
   // userRootCabinet.then(function (res) {
   //   $scope.userRootCabinet = res;

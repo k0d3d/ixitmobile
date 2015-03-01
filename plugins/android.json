@@ -17,10 +17,6 @@
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
-                            "count": 1
-                        },
-                        {
                             "xml": "<feature name=\"File\"><param name=\"android-package\" value=\"org.apache.cordova.file.FileUtils\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
@@ -54,6 +50,10 @@
                         },
                         {
                             "xml": "<feature name=\"LaunchMyApp\"><param name=\"android-package\" value=\"nl.xservices.plugins.LaunchMyApp\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
                             "count": 1
                         }
                     ],
@@ -89,7 +89,7 @@
                     "/*/application/activity": [
                         {
                             "xml": "<intent-filter><data android:scheme=\"ixit\" /><action android:name=\"android.intent.action.VIEW\" /><category android:name=\"android.intent.category.DEFAULT\" /><category android:name=\"android.intent.category.BROWSABLE\" /></intent-filter>",
-                            "count": 1
+                            "count": 2
                         }
                     ]
                 }
@@ -106,9 +106,6 @@
             "PACKAGE_NAME": "com.ixit.mobile"
         },
         "com.ionic.keyboard": {
-            "PACKAGE_NAME": "com.ixit.mobile"
-        },
-        "nl.x-services.plugins.toast": {
             "PACKAGE_NAME": "com.ixit.mobile"
         },
         "org.apache.cordova.file": {
@@ -143,6 +140,9 @@
         },
         "nl.x-services.plugins.launchmyapp": {
             "URL_SCHEME": "ixit",
+            "PACKAGE_NAME": "com.ixit.mobile"
+        },
+        "nl.x-services.plugins.toast": {
             "PACKAGE_NAME": "com.ixit.mobile"
         }
     },

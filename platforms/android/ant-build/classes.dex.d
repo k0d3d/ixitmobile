@@ -107,6 +107,7 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin$1.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/org/pgsqlite/SQLitePlugin$DBQuery.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/ru/bartwell/exfilepicker/ExFilePicker.class \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/nl/xservices/plugins/LaunchMyApp.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/nl/xservices/plugins/Toast.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/classes/nl/xservices/plugins/Toast$1.class \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/ant-build/dexedLibs/classes-25750950ab51f4ebf7d1bfa1c81656b2.jar \

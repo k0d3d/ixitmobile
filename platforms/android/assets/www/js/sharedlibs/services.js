@@ -407,7 +407,12 @@
       pendingPrompt: null,
       thisDevice: null,
       isRequesting: false,
-      isTokenPresent: $window.localStorage.authorizationToken || false,
+      isBearerTokenPresent: function () {
+        if ($window.localStorage.authorizationToken) {
+          return $window.localStorage.authorizationToken.split(' ')[0] === 'Bearer';
+        }
+        return false;
+      },
       modals: {},
       openOnStateChangeSuccess: function openOnStateChangeSuccess (actionName) {
         console.log('should set');

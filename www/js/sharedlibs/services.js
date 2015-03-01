@@ -80,7 +80,7 @@
         //   });
         // },
         login: function(user) {
-          // return $rootScope.$broadcast('auth:auth-login-confirmed');
+          return $rootScope.$broadcast('auth:auth-login-confirmed');
           var authHeaderString = 'Basic ' + btoa(encodeURIComponent(user.email) + ':' + user.password);
           // console.log(atob(authHeaderString));
           $http.defaults.headers.common.Authorization =  authHeaderString;
@@ -407,7 +407,12 @@
       pendingPrompt: null,
       thisDevice: null,
       isRequesting: false,
-      isTokenPresent: $window.localStorage.authorizationToken || false,
+      isBearerTokenPresent: function () {
+        if ($window.localStorage.authorizationToken) {
+          return $window.localStorage.authorizationToken.split(' ')[0] === 'Bearer';
+        }
+        return false;
+      },
       modals: {},
       openOnStateChangeSuccess: function openOnStateChangeSuccess (actionName) {
         console.log('should set');

@@ -16,7 +16,16 @@ var app = angular.module('ixitApp', [
   'ixitApp.config'
   ]);
 
-app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($ionicPlatform, $rootScope, appBootStrap, $document) {
+app.run([
+  '$ionicPlatform',
+  '$rootScope',
+  'appBootStrap',
+  '$document',
+  '$window',
+  // '$state',
+  // '$stateParams',
+  // function($ionicPlatform, $rootScope, appBootStrap, $document, $window, $state, $stateParams) {
+  function($ionicPlatform, $rootScope, appBootStrap) {
 
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -26,7 +35,7 @@ app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($
     }
     if(window.StatusBar) {
       // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
+      window.StatusBar.styleDefault();
     }
 
     //set up and init image caching
@@ -53,22 +62,23 @@ app.run(['$ionicPlatform', '$rootScope', 'appBootStrap', '$document', function($
         }
     );
     window.plugins.webintent.getUri(function(url) {
-      if(url !== "") {
+      if(url !== '') {
         // url is the url the intent was launched with
-        // console.log(url);
+        console.log(url);
       }
     });
     window.plugins.webintent.onNewIntent(function(url) {
       console.log(url);
-        if(url !== "") {
+        if(url !== '') {
+          console.log(url);
             // url is the url that was passed to onNewIntent
         }
     });
 
     // if thr no no auth..token in app local storage, treat d user as a first time user
-    if (!$window.localStorage.authorizationToken) {
-        return $state.transitionTo('app.auth.welcome', $stateParams, { reload: true, inherit: true, notify: true });
-    }
+    // if (!$window.localStorage.authorizationToken) {
+    //     return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
+    // }
 
     //load this device in
     appBootStrap.strapCordovaDevice();
@@ -81,27 +91,27 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
   $stateProvider
 
     .state('app', {
-      url: "/app",
+      url: '/app',
       abstract: true,
       controller: 'AppCtrl'
     })
 
     .state('app.tixi', {
-      url: "/tixi",
+      url: '/tixi',
       abstract: true,
       views: {
         'maincontent@' : {
-          templateUrl: "templates/app.html",
+          templateUrl: 'templates/app.html',
           controller: 'TixiCtrl'
         }
       }
     })
 
     .state('app.tixi.files', {
-      url: "/files",
+      url: '/files',
       views: {
         'viewContent@app.tixi' :{
-          templateUrl: "templates/files.html",
+          templateUrl: 'templates/files.html',
           controller: 'FilesCtrl',
           resolve: {
             userRootCabinet: function (Keeper) {
@@ -112,29 +122,29 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       }
     })
     .state('app.tixi.upload', {
-      url: "/upload",
+      url: '/upload',
       views: {
         'viewContent@app.tixi' :{
-          templateUrl: "templates/upload.html",
+          templateUrl: 'templates/upload.html',
           controller: 'UploaderCtrl'
         }
       }
     })
     .state('app.fs', {
-      url: "/fs",
+      url: '/fs',
       abstract: true,
       views: {
         'noheadercontent@' : {
-          templateUrl: "full-screen.html",
+          templateUrl: 'full-screen.html',
 
         }
       }
     })
     .state('app.fs.welcome', {
-      url: "/welcome",
+      url: '/welcome',
       views: {
         'fullContent@app.fs' :{
-          templateUrl: "templates/splash-first.html"
+          templateUrl: 'templates/splash-first.html'
         }
       }
     });
@@ -209,13 +219,34 @@ app.controller('AppCtrl' , [
   '$stateParams',
   '$window',
   function ($scope, $state, $stateParams, $window) {
-  console.log('always runs');
   $scope.mainCfg = {
     viewNoHeaderIsActive: true
   };
   if ($window.localStorage.authorizationToken) {
     return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
   }
+
+
+  $scope.$on('$stateChangeStart',
+  // function(event, toState, toParams, fromState, fromParams){
+  function(event, toState){
+    //check for an authorizationToken in our localStorage
+    //if we find one, we check if it is a Bearer type token,
+    //we wanna redirect to our login page to get new auth tokens
+    //
+    if ($window.localStorage.authorizationToken) {
+      //if we have an bearer type auth token and for some reason, we're being sent to any
+      //app.auth state... it should freeze d transition.
+      if (
+        ($window.localStorage.authorizationToken && toState.name.indexOf('app.fs.auth') > -1 ) &&
+        ($window.localStorage.authorizationToken.split(' ')[0] === 'Bearer' && toState.name.indexOf('app.fs.auth') > -1 )
+      ) {
+        console.log('shouldnt b here');
+        return event.preventDefault();
+      }
+    }
+  });
+
 
 
 }]);
@@ -231,7 +262,8 @@ app.controller('TixiCtrl',
   'appServices',
   'cordovaServices',
   '$window',
-  function($scope, $state, appBootStrap, $ionicLoading, $ionicActionSheet, $timeout, appServices, cordovaServices, $window) {
+  '$cordovaToast',
+  function($scope, $state, appBootStrap, $ionicLoading, $ionicActionSheet, $timeout, appServices, cordovaServices, $window, $cordovaToast) {
 
   var connection;
   $scope.isConnected = false;
@@ -241,26 +273,6 @@ app.controller('TixiCtrl',
     dir: [],
     files: []
   };
-
-
-  $scope.$on('$stateChangeStart',
-  function(event, toState, toParams, fromState, fromParams){
-    //check for an authorizationToken in our localStorage
-    //if we find one, we check if it is a Bearer type token,
-    //we wanna redirect to our login page to get new auth tokens
-    //
-    if ($window.localStorage.authorizationToken) {
-      //if we have an bearer type auth token and for some reason, we're being sent to any
-      //app.auth state... it should freeze d transition.
-      if (
-        ($window.localStorage.authorizationToken && toState.name.indexOf("app.fs.auth") > -1 ) &&
-        ($window.localStorage.authorizationToken.split(" ")[0] == 'Bearer' && toState.name.indexOf("app.fs.auth") > -1 )
-      ) {
-        console.log('shouldnt b here');
-        return event.preventDefault();
-      }
-    }
-  });
 
   // $scope.$watch('isConnected', function (n) {
   //   if (!n) {
@@ -302,30 +314,30 @@ app.controller('TixiCtrl',
 
   // Opens an action panel so the user can choose what type
   // of upload they wish to make
-  $scope.select_up_action = function () {
-    // Show the action sheet
-    var hideSheet = $ionicActionSheet.show({
-      buttons: [
-       { text: 'Picture or Video' },
-       { text: 'Other Files' },
-       { text: 'A Folder' }
-      ],
-      titleText: 'What do you want to upload?',
-      cancelText: 'Cancel',
-      cancel: function() {
-          // add cancel code..
-        },
-      buttonClicked: function(index) {
-        $scope.fileBrowser.show();
+  // $scope.select_up_action = function () {
+  //   // Show the action sheet
+  //   var hideSheet = $ionicActionSheet.show({
+  //     buttons: [
+  //      { text: 'Picture or Video' },
+  //      { text: 'Other Files' },
+  //      { text: 'A Folder' }
+  //     ],
+  //     titleText: 'What do you want to upload?',
+  //     cancelText: 'Cancel',
+  //     cancel: function() {
+  //         // add cancel code..
+  //       },
+  //     buttonClicked: function() {
+  //       $scope.fileBrowser.show();
 
-        return true;
-      }
-    });
-    // // For example's sake, hide the sheet after two seconds
-    // $timeout(function() {
-    //  hideSheet();
-    // }, 2000);
-  };
+  //       return true;
+  //     }
+  //   });
+  //   // // For example's sake, hide the sheet after two seconds
+  //   // $timeout(function() {
+  //   //  hideSheet();
+  //   // }, 2000);
+  // };
 
   $scope.start_uploading  = function (FLOW) {
     if (FLOW.files.length) {
@@ -336,12 +348,6 @@ app.controller('TixiCtrl',
   };
 
   // $scope.loginModal = appBootStrap.loginModal;
-
-  //checks if there is an authorization token on
-  //our localStorage
-  if (!appBootStrap.isTokenPresent) {
-    $state.go('app.fs.welcome');
-  }
 
   $scope.$on('app:connection-lost', function () {
     // window.location = "noresponse.html";
@@ -382,7 +388,7 @@ app.controller('TixiCtrl',
     $scope.isConnected = true;
   });
 
-  $scope.$on('app:auth-login-required', function(e, rejection) {
+  $scope.$on('app:auth-login-required', function() {
     if (!$state.is('app.fs.login')) {
       $state.go('app.fs.login');
     }
@@ -393,6 +399,13 @@ app.controller('TixiCtrl',
   });
 
 
+  //checks if there is an authorization token on
+  //our localStorage
+  if (!appBootStrap.isBearerTokenPresent()) {
+    $scope.$emit('app:auth-login-required');
+  }
+
+
   //Be sure to cleanup the modal by removing it from the DOM
   $scope.$on('$destroy', function() {
     appBootStrap.activeModal.remove();
@@ -400,10 +413,10 @@ app.controller('TixiCtrl',
     $timeout.cancel(connection);
   });
 }]);
-app.factory("connectionInterceptor", function($q, $rootScope) {
+app.factory('connectionInterceptor', function($q, $rootScope) {
       return {
         responseError: function(rejection) {
-            if(rejection.status == 0) {
+            if(rejection.status === 0) {
               $rootScope.$broadcast('app:connection-lost');
               return;
             }
