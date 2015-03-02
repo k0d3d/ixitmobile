@@ -112,12 +112,12 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       views: {
         'viewContent@app.tixi' :{
           templateUrl: 'templates/files.html',
-          controller: 'FilesCtrl',
-          resolve: {
-            userRootCabinet: function (Keeper) {
-              return Keeper.thisUserFiles({});
-            }
-          }
+          // controller: 'FilesCtrl',
+          // resolve: {
+          //   userRootCabinet: function (Keeper) {
+          //     return Keeper.thisUserFiles({});
+          //   }
+          // }
         }
       }
     })
@@ -196,7 +196,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
          'responseError': function(response) {
             // do something on error
             if (response.status === 403) {
-              $rootScope.$broadcast('app:auth-login-required');
+              $rootScope.$broadcast('auth:auth-login-required');
             }
             $rootScope.$broadcast('app:is-requesting', false);
             return $q.reject(response);
@@ -218,11 +218,13 @@ app.controller('AppCtrl' , [
   '$state',
   '$stateParams',
   '$window',
-  function ($scope, $state, $stateParams, $window) {
+  'appBootStrap',
+  function ($scope, $state, $stateParams, $window, appBootStrap) {
   $scope.mainCfg = {
     viewNoHeaderIsActive: true
   };
-  if ($window.localStorage.authorizationToken) {
+
+  if (!$window.localStorage.authorizationToken) {
     return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
   }
 
@@ -246,8 +248,6 @@ app.controller('AppCtrl' , [
       }
     }
   });
-
-
 
 }]);
 
@@ -388,13 +388,13 @@ app.controller('TixiCtrl',
     $scope.isConnected = true;
   });
 
-  $scope.$on('app:auth-login-required', function() {
+  $scope.$on('auth:auth-login-required', function() {
     if (!$state.is('app.fs.login')) {
       $state.go('app.fs.login');
     }
   });
 
-  $scope.$on('app:auth-logout-complete', function() {
+  $scope.$on('auth:auth-logout-complete', function() {
     $state.go('app.fs.home', {}, {reload: true, inherit: false});
   });
 
@@ -402,7 +402,7 @@ app.controller('TixiCtrl',
   //checks if there is an authorization token on
   //our localStorage
   if (!appBootStrap.isBearerTokenPresent()) {
-    $scope.$emit('app:auth-login-required');
+    $scope.$emit('auth:auth-login-required');
   }
 
 

@@ -2,24 +2,20 @@
   var app = angular.module('auth', []);
 
 
-  app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider) {
+  app.config(function($stateProvider) {
     $stateProvider
 
     .state('app.fs.login', {
-      url: "/auth",
+      url: '/auth',
       views: {
         'fullContent@app.fs' :{
           controller: 'RegisterLoginCtrl',
-          templateUrl: "templates/auth/login.html"
+          templateUrl: 'templates/auth/login.html'
         }
       }
     });
 
   });
-
-  app.controller('RegisterCtrl', ['$scope', function ($scope) {
-
-  }]);
 
   app.controller('RegisterLoginCtrl',[
     '$scope',
@@ -29,32 +25,36 @@
     '$ionicModal',
     '$window',
     '$ionicPlatform',
-    '$timeout',
-    'appBootStrap',
-    function($scope, $state, AuthenticationService, $ionicPopup, $ionicModal, $window, $ionicPlatform, $timeout, appBootStrap) {
+    function($scope, $state, AuthenticationService, $ionicPopup, $ionicModal, $window, $ionicPlatform) {
     $ionicPlatform.onHardwareBackButton(function () {
       return false;
     });
 
-    $scope.message = "";
+    $scope.message = '';
 
     $scope.form = {
       username: null,
       password: null
     };
 
-    $ionicModal.fromTemplateUrl('templates/auth/login.html',
-      {
-        scope: $scope,
-        animation: 'slide-in-up',
-        focusFirstInput: true,
-        backdropClickToClose: false,
-        hardwareBackButtonClose: false
-      }
-    ).then(function (modal) {
-      appBootStrap.activeModal = modal;
-      appBootStrap.activeModal.show();
-    });
+    // $ionicModal.fromTemplateUrl('templates/auth/login.html',
+    //   {
+    //     scope: $scope,
+    //     animation: 'slide-in-up',
+    //     focusFirstInput: true,
+    //     backdropClickToClose: false,
+    //     hardwareBackButtonClose: false
+    //   }
+    // ).then(function (modal) {
+    //   appBootStrap.activeModal = modal;
+    //   console.log(appBootStrap.isBearerTokenPresent());
+    //   //checks if there is an authorization token on
+    //   //our localStorage
+    //   if (!appBootStrap.isBearerTokenPresent()) {
+    //     console.log('hi');
+    //     // appBootStrap.activeModal.show();
+    //   }
+    // });
 
     $scope.loginBtn = function(form) {
       AuthenticationService.login(form);
@@ -88,16 +88,22 @@
       });
     };
 
+
     $scope.$on('auth:auth-login-confirmed', function() {
-      appBootStrap.activeModal.hide();
-      $scope.username = null;
-      $state.go('app.tixi.files', {}, {reload: true, inherit: false});
+      $scope.mainCfg.viewNoHeaderIsActive = false;
+      $scope.email = $scope.passport = null;
+      $state.go('app.tixi.files', {}, {
+        location: true,
+        reload: true
+      });
+
+      // window.location.reload(true);
     });
 
     $scope.$on('auth:auth-login-failed', function(e, status) {
-      var error = "Login failed.";
+      var error = 'Login failed.';
       if (status == 401) {
-        error = "Invalid Username or Password.";
+        error = 'Invalid Username or Password.';
       }
       // An alert dialog
       var alertPopup = $ionicPopup.alert({

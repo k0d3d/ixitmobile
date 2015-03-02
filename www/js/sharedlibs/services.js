@@ -80,7 +80,6 @@
         //   });
         // },
         login: function(user) {
-          return $rootScope.$broadcast('auth:auth-login-confirmed');
           var authHeaderString = 'Basic ' + btoa(encodeURIComponent(user.email) + ':' + user.password);
           // console.log(atob(authHeaderString));
           $http.defaults.headers.common.Authorization =  authHeaderString;
@@ -152,10 +151,10 @@
 
       a.path = [];
 
-      a.addToCrumb = function (ob) {
-        a.path.push(ob);
-        $rootScope.$broadcast('refresh_breadcrumb');
-      };
+      // a.addToCrumb = function (ob) {
+      //   a.path.push(ob);
+      //   $rootScope.$broadcast('refresh_breadcrumb');
+      // };
 
 
       /**
@@ -165,7 +164,7 @@
        * @return {[type]}
        */
       a.thisUserFiles = function(param, callback){
-        return $http.get('/api/v1/users/files', param)
+        return $http.get('/api/v2/users/files', param)
                 .then(function(data) {
                   return data;
                 }, function (data, status) {
@@ -186,7 +185,7 @@
        * @return {[type]}
        */
       a.thisUserQueue = function(param, callback){
-        $http.get(api_config + '/api/internal/users/queue', param)
+        $http.get('/api/v2/users/queue', param)
         .success(function(data, status){
             callback(data);
           })
@@ -203,7 +202,7 @@
        * @return {[type]}
        */
       a.deleteThisFile = function(ixid, callback){
-        $http.delete(api_config + '/api/internal/users/files/'+ixid)
+        $http.delete('/api/v2/users/files/'+ixid)
         .success(function(data, status){
           callback(data);
         })
@@ -218,7 +217,7 @@
        * @return {[type]}
        */
       a.deleteThisFolder = function(folderId, callback){
-        $http.delete(api_config + '/api/internal/users/folder/' + folderId)
+        $http.delete('/api/v2/users/folder/' + folderId)
         .success(function(data, status){
           callback(data);
         })
@@ -234,7 +233,7 @@
        * @return {[type]}
        */
       a.removeFromQueue = function(mid, callback){
-        $http.delete('/api/internal/users/queue/'+mid)
+        $http.delete('/api/v2/users/queue/'+mid)
         .success(function(data, success){
           callback();
         })
@@ -250,7 +249,7 @@
        * @return {[type]}
        */
       a.updateTags = function(tags, file_id, cb){
-        $http.put('/api/internal/users/files/'+file_id+'/tags', {tags: tags})
+        $http.put('/api/v2/users/files/'+file_id+'/tags', {tags: tags})
         .success(function(d){
 
         })
@@ -409,7 +408,12 @@
       isRequesting: false,
       isBearerTokenPresent: function () {
         if ($window.localStorage.authorizationToken) {
-          return $window.localStorage.authorizationToken.split(' ')[0] === 'Bearer';
+          if ($window.localStorage.authorizationToken.split(' ')[0] === 'Bearer'){
+            //returns 1, if there is a bearer token
+            return 1;
+          }
+          //anything other than a bearer token
+          return 2;
         }
         return false;
       },

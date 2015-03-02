@@ -112,12 +112,12 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       views: {
         'viewContent@app.tixi' :{
           templateUrl: 'templates/files.html',
-          // controller: 'FilesCtrl',
-          // resolve: {
-          //   userRootCabinet: function (Keeper) {
-          //     return Keeper.thisUserFiles({});
-          //   }
-          // }
+          controller: 'FilesCtrl',
+          resolve: {
+            userRootCabinet: function (Keeper) {
+              return Keeper.thisUserFiles({});
+            }
+          }
         }
       }
     })
@@ -221,11 +221,11 @@ app.controller('AppCtrl' , [
   'appBootStrap',
   function ($scope, $state, $stateParams, $window, appBootStrap) {
   $scope.mainCfg = {
-    viewNoHeaderIsActive: true
+    viewNoHeaderIsActive: appBootStrap.isBearerTokenPresent()
   };
 
   if (!$window.localStorage.authorizationToken) {
-    return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
+    return $state.transitionTo('app.fs.welcome', $stateParams, { inherit: true, notify: true });
   }
 
 
@@ -264,6 +264,10 @@ app.controller('TixiCtrl',
   '$window',
   '$cordovaToast',
   function($scope, $state, appBootStrap, $ionicLoading, $ionicActionSheet, $timeout, appServices, cordovaServices, $window, $cordovaToast) {
+
+  if (!appBootStrap.isBearerTokenPresent()) {
+    return $state.transitionTo('app.fs.welcome', {}, { reload: true, inherit: true, notify: true });
+  }
 
   var connection;
   $scope.isConnected = false;
@@ -388,7 +392,8 @@ app.controller('TixiCtrl',
     $scope.isConnected = true;
   });
 
-  $scope.$on('auth:auth-login-required', function() {
+  $scope.$on('auth:auth-login-required', function(e) {
+    console.log(e)
     if (!$state.is('app.fs.login')) {
       $state.go('app.fs.login');
     }
@@ -399,9 +404,9 @@ app.controller('TixiCtrl',
   });
 
 
-  //checks if there is an authorization token on
+  //checks if there is a bearer authorization token on
   //our localStorage
-  if (!appBootStrap.isBearerTokenPresent()) {
+  if (appBootStrap.isBearerTokenPresent() === 2) {
     $scope.$emit('auth:auth-login-required');
   }
 

@@ -80,7 +80,6 @@
         //   });
         // },
         login: function(user) {
-          // return $rootScope.$broadcast('auth:auth-login-confirmed');
           var authHeaderString = 'Basic ' + btoa(encodeURIComponent(user.email) + ':' + user.password);
           // console.log(atob(authHeaderString));
           $http.defaults.headers.common.Authorization =  authHeaderString;

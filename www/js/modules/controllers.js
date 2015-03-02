@@ -16,7 +16,6 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
     fileChooser.open(function(uri) {
       window.resolveLocalFileSystemURL(uri, function (fileEntry) {
         fileEntry.file(function (fileObject) {
-          console.log(fileObject);
           $scope.$flow.addFile(fileObject);
         });
       }, function (err) {
@@ -36,7 +35,6 @@ app.controller('UploaderCtrl', ['$scope', 'cordovaServices', function ($scope, c
 
         cordovaServices.returnFilePathName(uri, function (fileMeta) {
           cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
-            console.log(fileObject);
             $scope.$flow.addFile(fileObject);
           });
         });
