@@ -12,11 +12,11 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
     $scope.userRootCabinet = userRootCabinet.data;
   }
 
+
   $scope.open_chooser = function () {
     fileChooser.open(function(uri) {
       window.resolveLocalFileSystemURL(uri, function (fileEntry) {
         fileEntry.file(function (fileObject) {
-          console.log(fileObject);
           $scope.$flow.addFile(fileObject);
         });
       }, function (err) {
@@ -36,7 +36,6 @@ app.controller('UploaderCtrl', ['$scope', 'cordovaServices', function ($scope, c
 
         cordovaServices.returnFilePathName(uri, function (fileMeta) {
           cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
-            console.log(fileObject);
             $scope.$flow.addFile(fileObject);
           });
         });
@@ -50,9 +49,37 @@ app.controller('UploaderCtrl', ['$scope', 'cordovaServices', function ($scope, c
   };
 }]);
 
-app.controller('SplashCtrl', ['$scope', function ($scope) {
+app.controller('AccountCtrl', ['$scope', '$ionicPopup', function ($scope, $ionicPopup) {
+  $scope.accountPopup = function () {
+    // An elaborate, custom popup
+    var accountPopup = $ionicPopup.show({
+      templateUrl: 'templates/inc/account-edit.html',
+      title: 'Edit Profile',
+      // subTitle: 'Adds',
+      scope: $scope,
+      cssClass: 'account-popup animated bounceIn',
+      buttons: [
+        {
+          text: 'Cancel',
+          type: 'button-clear',
+          onTap: function(e) {
 
+          }
+        },
+        {
+          text: '<b>Save</b>',
+          type: 'button-dark yellow-font',
+          onTap: function(e) {
 
+          }
+        }
+      ]
+    });
+
+    $scope.$on('$destroy', function () {
+      accountPopup.remove();
+    });
+  };
 }]);
 
 app.filter('hideSystemFiles', function () {

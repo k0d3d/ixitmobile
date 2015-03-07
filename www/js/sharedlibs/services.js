@@ -56,29 +56,6 @@
             cb(new Error(data.message));
           });
         },
-        // login: function(user) {
-        //   $http.post('/api/v1/users/auth', {
-        //     email: encodeURI(user.email),
-        //     password: user.password
-        //   })
-        //   .success(function (data, status) {
-        //     $http.defaults.headers.common.Authorization = 'Bearer ' + data.authorizationToken;  // Step 1
-
-        //     // Need to inform the http-auth-interceptor that
-        //     // the user has logged in successfully.  To do this, we pass in a function that
-        //     // will configure the request headers with the authorization token so
-        //     // previously failed requests(aka with status == 401) will be resent with the
-        //     // authorization token placed in the header
-        //     // config.headers.Authorization = 'Bearer ' + data.authorizationToken;
-        //     $window.localStorage.authorizationToken = data.authorizationToken;
-        //     $rootScope.$broadcast('auth:auth-login-confirmed', status);
-
-        //   })
-        //   .error(function (data, status) {
-        //     $rootScope.$broadcast('event:auth-login-failed', status);
-        //     delete $window.localStorage.authorizationToken;
-        //   });
-        // },
         login: function(user) {
           var authHeaderString = 'Basic ' + btoa(encodeURIComponent(user.email) + ':' + user.password);
           // console.log(atob(authHeaderString));
@@ -136,13 +113,13 @@
             $rootScope.$broadcast('auth:auth-logout-complete');
           });
         },
-        loginCancelled: function() {
-          authService.loginCancelled();
+        putUserInfo: function putUserInfo (form) {
+          return $http.put('/api/v2/user', form);
         }
       };
       return service;
   }]);
-  app.factory('Keeper', ['$http', '$rootScope', 'api_config', function($http, $rootScope, api_config){
+  app.factory('Keeper', ['$http', function($http){
       var a = {};
 
       a.currentFolder = '';
@@ -163,19 +140,13 @@
        * @param  {Function} callback
        * @return {[type]}
        */
-      a.thisUserFiles = function(param, callback){
+      a.thisUserFiles = function(param){
         return $http.get('/api/v2/users/files', param)
                 .then(function(data) {
                   return data;
                 }, function (data, status) {
                   return status;
                 });
-        // .success(function(data, status){
-        //     callback(data);
-        // })
-        // .error(function(data, status){
-        //     callback(false);
-        // });
       };
 
       /**
@@ -186,10 +157,10 @@
        */
       a.thisUserQueue = function(param, callback){
         $http.get('/api/v2/users/queue', param)
-        .success(function(data, status){
+        .success(function(data){
             callback(data);
           })
-        .error(function(data, status){
+        .error(function(data){
             console.log(data);
             callback(false);
           });
@@ -203,10 +174,10 @@
        */
       a.deleteThisFile = function(ixid, callback){
         $http.delete('/api/v2/users/files/'+ixid)
-        .success(function(data, status){
+        .success(function(data){
           callback(data);
         })
-        .error(function(data, status){
+        .error(function(data){
 
         });
       };
@@ -488,46 +459,6 @@
       },
       clientAuthenticationSave: function () {
 
-      },
-      mockOAuth : function mockOAuth (clientId, clientSecret, user) {
-        var deferred = $q.defer();
-
-
-        var browserRef = window.open(api_config.CONSUMER_API_URL + "/oauth/authorize?client_id=" + clientId + "&redirect_uri=http://localhost/callback&response_type=code&scope=read%20write&email=" +user.email+ "&password=" + user.password, "_blank", "location=no,clearsessioncache=yes,clearcache=yes");
-        browserRef.addEventListener("loadstart", function(event) {
-            if((event.url).indexOf("http://localhost/callback") === 0) {
-                var requestToken = (event.url).split("code=")[1];
-                $http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-                var authHeaderString = 'Basic ' + btoa(clientId + ':' + clientSecret);
-                delete $http.defaults.headers.common.Authorization;
-                $window.localStorage.authorizationToken  =  authHeaderString;
-                $http({
-                  method: "post",
-                  url: api_config.CONSUMER_API_URL + "/oauth/token",
-                  data: "client_id=" + clientId + "&client_secret=" + clientSecret + "&redirect_uri=http://localhost/callback" + "&grant_type=authorization_code" + "&code=" + requestToken ,
-                  // headers: {
-                  //   "Authorization" : authHeaderString
-                  // }
-                })
-                    .success(function(data) {
-                        $window.localStorage.authorizationToken = 'Bearer ' + data.access_token;
-                        deferred.resolve(data);
-                    })
-                    .error(function(data, status) {
-                        deferred.reject("Problem authenticating");
-                    })
-                    .finally(function() {
-                        setTimeout(function() {
-                            browserRef.close();
-                        }, 10);
-                    });
-            }
-        });
-        browserRef.addEventListener('exit', function(event) {
-            deferred.reject("The sign in flow was canceled");
-        });
-
-        return deferred.promise;
       },
       clientOAuth: function clientOAuth (clientId, clientSecret, user) {
         var deferred = $q.defer();
