@@ -1,7 +1,51 @@
 var config_module = angular.module('ixitApp.config', []);
 var config_data = {
-  'app': {
-    'app_name': 'IXIT Mobile'
+  'appData': {
+    'app_name': 'IXIT Mobile',
+    'filetypeIcons': [
+      'accdb.png',
+      'eml.png',
+      'htm.png',
+      'jsf.png',
+      'no-img.png',
+      'proj.png',
+      'readme.png',
+      'vsd.png',
+      'xlsx_mac.png',
+      'bmp.png',
+      'eps.png',
+      'ind.png',
+      'midi.png',
+      'pdf.png',
+      'psd.png',
+      'settings.png',
+      'wav.png',
+      'xlsx.png',
+      'css.png',
+      'fla.png',
+      'ini.png',
+      'mov.png',
+      'png.png',
+      'pst.png',
+      'text.png',
+      'wma.png',
+      'doc.png',
+      'gif.png',
+      'jpeg.png',
+      'mp3.png',
+      'pptx_mac.png',
+      'pub.png',
+      'tiff.png',
+      'wmv.png',
+      'docx.png',
+      'html.png',
+      'jpg.png',
+      'mpeg.png',
+      'pptx_win.png',
+      'rar.png',
+      'url.png',
+      'xls.png'
+    ]
   },
   'api_config': {
     // 'url': 'http://drugstoc.ng'

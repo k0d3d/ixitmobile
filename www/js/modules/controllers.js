@@ -55,41 +55,43 @@ app.controller('AccountCtrl', [
   'AuthenticationService',
   '$cordovaToast',
   function ($scope, $ionicPopup, AuthenticationService, $cordovaToast) {
+  $scope.uiElements = {};
   $scope.accountPopup = function () {
+    $scope.subTitle = '';
     // An elaborate, custom popup
     var accountPopup = $ionicPopup.show({
       templateUrl: 'templates/inc/account-edit.html',
       title: 'Edit Profile',
-      // subTitle: 'Adds',
+      subTitle: $scope.subTitle,
       scope: $scope,
       cssClass: 'account-popup animated bounceIn',
       buttons: [
         {
           text: 'Cancel',
           type: 'button-clear',
-          onTap: function(e) {
-
-          }
         },
         {
           text: '<b>Save</b>',
           type: 'button-dark yellow-font',
           onTap: function(e) {
-
+            e.preventDefault();
+            if (!$scope.form.firstName.length || !$scope.form.firstName.length ) {
+              $scope.subTitle = 'Please enter a the required fields.';
+            }
+            $scope.saveUserProfile($scope.form);
           }
         }
       ]
     });
 
-    $scope.$on('$destroy', function () {
-      accountPopup.remove();
-    });
+    $scope.uiElements.accountPopup = accountPopup;
   };
 
 
   $scope.saveUserProfile = function saveUserProfile (form) {
     AuthenticationService.putUserInfo(form)
     .then(function () {
+      $scope.uiElements.accountPopup.close();
       //toast for profile updated successfully
       if ($cordovaToast) {
         $cordovaToast.showShortBottom('Profile has been updated.');
@@ -129,9 +131,18 @@ app.filter('moment', function(){
     }
   };
 });
-app.filter('fileicon', [function () {
+app.filter('fileicon', ['appData', function (appData) {
+  function imageExists(str) {
+    return _.indexOf(appData.filetypeIcons, str) > -1;
+  }
   return function (str) {
-    return './img/filetype/' + str.split('/').pop() + '.png';
+    var imgUrl = './img/filetype/' + str.split('/').pop() + '.png';
+    // imageExists(imgUrl, )
+    if (imageExists(str)) {
+      return imgUrl;
+    } else {
+      return './img/filetype/no-img.png';
+    }
   };
 }])
 ;

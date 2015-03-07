@@ -113,13 +113,13 @@
             $rootScope.$broadcast('auth:auth-logout-complete');
           });
         },
-        loginCancelled: function() {
-          authService.loginCancelled();
+        putUserInfo: function putUserInfo (form) {
+          return $http.put('/api/v2/user', form);
         }
       };
       return service;
   }]);
-  app.factory('Keeper', ['$http', '$rootScope', 'api_config', function($http, $rootScope, api_config){
+  app.factory('Keeper', ['$http', function($http){
       var a = {};
 
       a.currentFolder = '';
@@ -140,19 +140,13 @@
        * @param  {Function} callback
        * @return {[type]}
        */
-      a.thisUserFiles = function(param, callback){
+      a.thisUserFiles = function(param){
         return $http.get('/api/v2/users/files', param)
                 .then(function(data) {
                   return data;
                 }, function (data, status) {
                   return status;
                 });
-        // .success(function(data, status){
-        //     callback(data);
-        // })
-        // .error(function(data, status){
-        //     callback(false);
-        // });
       };
 
       /**
@@ -163,10 +157,10 @@
        */
       a.thisUserQueue = function(param, callback){
         $http.get('/api/v2/users/queue', param)
-        .success(function(data, status){
+        .success(function(data){
             callback(data);
           })
-        .error(function(data, status){
+        .error(function(data){
             console.log(data);
             callback(false);
           });
@@ -180,10 +174,10 @@
        */
       a.deleteThisFile = function(ixid, callback){
         $http.delete('/api/v2/users/files/'+ixid)
-        .success(function(data, status){
+        .success(function(data){
           callback(data);
         })
-        .error(function(data, status){
+        .error(function(data){
 
         });
       };

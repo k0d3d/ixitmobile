@@ -289,6 +289,7 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/jquery \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/angular \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/ngCordova \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/lodash \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/angular-ui-router \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/ng-flow \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/angular-animate \
@@ -1895,6 +1896,10 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/ngCordova/dist/ng-cordova.min.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/ngCordova/dist/ng-cordova-mocks.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/ngCordova/dist/ng-cordova-mocks.min.js \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/lodash/lodash.js \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/lodash/LICENSE.txt \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/lodash/lodash.min.js \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/lodash/bower.json \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/angular-ui-router/release \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/angular-ui-router/src \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/lib/angular-ui-router/CHANGELOG.md \
