@@ -381,7 +381,9 @@
           collectionName = _.kebabCase(collectionName);
           if (doc.id || doc._id) {
             docid = doc.id || doc._id;
+            doc.remoteid = docid;
           }
+
 
           //find the update
           self.selectOneDoc(doc, collectionName)
@@ -395,6 +397,7 @@
               doc._id = foundDoc._id;
               doc._rev = foundDoc._rev;
             }
+
 
             return PouchDB.put(doc);
           })

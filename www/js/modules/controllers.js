@@ -39,7 +39,6 @@ app.controller('UploaderCtrl', [
   'queueData',
   'PouchDB',
   function ($scope, cordovaServices, appDBBridge, queueData, PouchDB) {
-  console.log(queueData);
   // PouchDB.remove(queueData);
 
   function pick_file_object (objval) {
@@ -85,23 +84,25 @@ app.controller('UploaderCtrl', [
   };
 
   $scope.$flow.on('fileAdded', function (file) {
-    var upsert = true;
-    //
-    if (queue.length) {
-      upsert = false;
-    }
     queue.push(pick_file_object(file));
-    console.log(queue);
     //save to queue
-    appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue), upsert)
-    .then(function (doc) {
-      console.log(doc);
+    appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue))
+    .then(function () {
+      // console.log(doc);
     }, function (err) {
       console.lod(err);
     })
     .catch(function (err) {
       console.log(err);
     });
+  });
+
+  $scope.$flow.on('fileSuccess', function (file) {
+     _.remove(queue, function (n) {
+      return n.uniqueIdentifier == file.uniqueIdentifier;
+    });
+    console.log(queue);
+    appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue));
   });
 }]);
 
@@ -165,7 +166,8 @@ app.controller('AccountCtrl', [
 
   appDBBridge.fetchAndSyncDataToScope(userId, 'AuthenticationService.getThisUser', [])
   .then(function (updatedDoc) {
-    window.localStorage.userId = updatedDoc._id;
+
+    window.localStorage.userId = updatedDoc.remoteid;
     $scope.userData = updatedDoc;
   });
 }]);

@@ -1560,13 +1560,16 @@ angular.module('flow.provider', [])
     };
   };
 });
+/**
+ * modified
+ */
 angular.module('flow.init', ['flow.provider'])
   .controller('flowCtrl', ['$scope', '$attrs', '$parse', 'flowFactory',
   function ($scope, $attrs, $parse, flowFactory) {
 
     var options = angular.extend({
       query: {
-        'x-Authr': $scope.currentFolder
+        'x-Authr': window.localStorage.userId
       }
     }, $scope.$eval($attrs.flowInit));
 
@@ -1593,18 +1596,18 @@ angular.module('flow.init', ['flow.provider'])
           $scope.$on('$destroy', function () {
             $parse($attrs.flowName).assign($scope);
           });
-        }      
+        }
     }
 
-    $scope.$watch('currentFolder', function (n) {
-      if (n) {    
-        $scope.$flow.opts.query = {
-          'folder': $scope.currentFolder,
-          'x-Authr' : $scope.cuser
-        };
-        // return console.log($scope.$flow.opts);
-      }
-    });
+    // $scope.$watch('currentFolder', function (n) {
+    //   if (n) {
+    //     $scope.$flow.opts.query = {
+    //       'folder': $scope.currentFolder,
+    //       'x-Authr' : $scope.cuser
+    //     };
+    //     // return console.log($scope.$flow.opts);
+    //   }
+    // });
 
     __initFlowOptions(options);
   }])
