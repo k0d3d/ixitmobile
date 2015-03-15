@@ -14,23 +14,6 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
 
 
   $scope.open_chooser = function () {
-    fileChooser.open(function(uri) {
-      window.resolveLocalFileSystemURL(uri, function (fileEntry) {
-        fileEntry.file(function (fileObject) {
-          $scope.$flow.addFile(fileObject);
-        });
-      }, function (err) {
-        console.log(err);
-      });
-    }, function (err) {
-      console.log(err);
-    });
-  };
-});
-
-app.controller('UploaderCtrl', ['$scope', 'cordovaServices', function ($scope, cordovaServices) {
-
-  $scope.open_chooser = function () {
     if (fileChooser) {
       fileChooser.open(function(uri) {
 
@@ -47,6 +30,79 @@ app.controller('UploaderCtrl', ['$scope', 'cordovaServices', function ($scope, c
 
     }
   };
+});
+
+app.controller('UploaderCtrl', [
+  '$scope',
+  'cordovaServices',
+  'appDBBridge',
+  'queueData',
+  'PouchDB',
+  function ($scope, cordovaServices, appDBBridge, queueData, PouchDB) {
+  console.log(queueData);
+  // PouchDB.remove(queueData);
+
+  function pick_file_object (objval) {
+    return _.pick(objval, ['name', 'size', 'uniqueIdentifier', 'relativePath', 'uri']);
+  }
+  function omit_pouch_reserved_keys (objval) {
+    return  _.omit(objval, ['_id', '_rev']);
+  }
+
+  //check if null is returned, since the selectOneDoc method returns
+  //null if no doc is found
+  var queue;
+  if (queueData) {
+    queue = _.values(omit_pouch_reserved_keys(queueData));
+    // add files on the queue to our flow file queue
+    angular.forEach(queue, function (onefile) {
+      cordovaServices.returnFilePathName(onefile.uri, function (fileMeta) {
+        cordovaServices.getFileObject(onefile.uri, fileMeta, function (fileObject) {
+          $scope.$flow.addFile(fileObject);
+          // files.push(fileObject);
+        });
+      });
+    });
+  } else {
+    queue = [];
+  }
+
+  $scope.open_chooser = function () {
+    if (fileChooser) {
+      fileChooser.open(function(uri) {
+
+        cordovaServices.returnFilePathName(uri, function (fileMeta) {
+          cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
+            fileObject.uri = uri;
+            $scope.$flow.addFile(fileObject);
+          });
+        });
+
+      }, function (err) {
+        console.log(err);
+      });
+    }
+  };
+
+  $scope.$flow.on('fileAdded', function (file) {
+    var upsert = true;
+    //
+    if (queue.length) {
+      upsert = false;
+    }
+    queue.push(pick_file_object(file));
+    console.log(queue);
+    //save to queue
+    appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue), upsert)
+    .then(function (doc) {
+      console.log(doc);
+    }, function (err) {
+      console.lod(err);
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+  });
 }]);
 
 app.controller('AccountCtrl', [
@@ -54,8 +110,11 @@ app.controller('AccountCtrl', [
   '$ionicPopup',
   'AuthenticationService',
   '$cordovaToast',
-  function ($scope, $ionicPopup, AuthenticationService, $cordovaToast) {
+  'userData',
+  'appDBBridge',
+  function ($scope, $ionicPopup, AuthenticationService, $cordovaToast, userData, appDBBridge) {
   $scope.uiElements = {};
+  $scope.userData  = userData;
   $scope.accountPopup = function () {
     $scope.subTitle = '';
     // An elaborate, custom popup
@@ -72,13 +131,14 @@ app.controller('AccountCtrl', [
         },
         {
           text: '<b>Save</b>',
-          type: 'button-dark yellow-font',
+          type: 'button-clear button-dark yellow-font',
           onTap: function(e) {
             e.preventDefault();
-            if (!$scope.form.firstName.length || !$scope.form.firstName.length ) {
-              $scope.subTitle = 'Please enter a the required fields.';
-            }
-            $scope.saveUserProfile($scope.form);
+            console.log($scope);
+            // if (!$scope.userData.firstname.length || !$scope.userData.lastname.length ) {
+            //   $scope.subTitle = 'Please enter a the required fields.';
+            // }
+            $scope.saveUserProfile($scope.userData);
           }
         }
       ]
@@ -100,6 +160,14 @@ app.controller('AccountCtrl', [
         $cordovaToast.showShortBottom('Profile update failed.');
     });
   };
+
+  var userId = window.localStorage.userId || '';
+
+  appDBBridge.fetchAndSyncDataToScope(userId, 'AuthenticationService.getThisUser', [])
+  .then(function (updatedDoc) {
+    window.localStorage.userId = updatedDoc._id;
+    $scope.userData = updatedDoc;
+  });
 }]);
 
 app.filter('hideSystemFiles', function () {

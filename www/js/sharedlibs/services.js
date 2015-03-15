@@ -84,14 +84,14 @@
               if (isClient.data) {
                 // appBootStrap.mockOAuth(isClient.data.clientKey, isClient.data.clientSecret, user)
                 appBootStrap.clientOAuth(isClient.data.clientKey, isClient.data.clientSecret, user)
-                .then(function (token) {
+                .then(function () {
                   $rootScope.$broadcast('auth:auth-login-confirmed', status);
                 });
               } else {
                 appBootStrap.clientAuthenticationCreate()
                 .then (function (client) {
                   appBootStrap.clientOAuth(client.data.clientKey, client.data.clientSecret, user)
-                  .then(function (token) {
+                  .then(function () {
                     $rootScope.$broadcast('auth:auth-login-confirmed', status);
                   });
                 });
@@ -114,7 +114,10 @@
           });
         },
         putUserInfo: function putUserInfo (form) {
-          return $http.put('/api/v2/user', form);
+          return $http.put('/api/v2/users', form);
+        },
+        getThisUser: function getThisUser () {
+          return $http.get('/api/v2/users');
         }
       };
       return service;
@@ -166,6 +169,10 @@
           });
       };
 
+      a.addToUserQueue = function addToUserQueue (params) {
+        return $http.post('/api/v2/users/queue', params);
+      };
+
       /**
        * [deleteThisFile deletes a file belonging to the user]
        * @param  {[type]}   ixid
@@ -177,7 +184,7 @@
         .success(function(data){
           callback(data);
         })
-        .error(function(data){
+        .error(function(){
 
         });
       };
@@ -189,12 +196,12 @@
        */
       a.deleteThisFolder = function(folderId, callback){
         $http.delete('/api/v2/users/folder/' + folderId)
-        .success(function(data, status){
+        .success(function(data){
           callback(data);
-        })
-        .error(function(data, status){
-
         });
+        // .error(function(err){
+
+        // });
       };
 
       /**
@@ -203,14 +210,8 @@
        * @param  {Function} callback
        * @return {[type]}
        */
-      a.removeFromQueue = function(mid, callback){
-        $http.delete('/api/v2/users/queue/'+mid)
-        .success(function(data, success){
-          callback();
-        })
-        .error(function(data, success) {
-            /* Act on the event */
-        });
+      a.removeFromQueue = function(mid){
+        return $http.delete('/api/v2/users/queue/'+mid);
       };
 
       /**
@@ -219,32 +220,223 @@
        * @param  {Function} cb
        * @return {[type]}
        */
-      a.updateTags = function(tags, file_id, cb){
-        $http.put('/api/v2/users/files/'+file_id+'/tags', {tags: tags})
-        .success(function(d){
-
-        })
-        .error(function(d){
-
-        });
+      a.updateTags = function(tags, file_id){
+        return $http.put('/api/v2/users/files/'+file_id+'/tags', {tags: tags});
       };
 
-      a.search = function(query, cb){
-        $http.get('/api/search/'+query)
-        .success(function(d){
-          cb(d);
-        })
-        .error(function(err){
-
-        });
-      };
-
-      a.makeFolder = function(foldername, parent, cb){
-
+      a.search = function(query){
+        return $http.get('/api/search/'+query);
       };
 
       return a;
     }]);
+  app.factory('httpBuffer', ['$injector', function($injector) {
+    /** Holds all the requests, so they can be re-requested in future. */
+    var buffer = [];
+
+    /** Service initialized later because of circular dependency problem. */
+    var $http;
+
+    function retryHttpRequest(config, deferred) {
+      function successCallback(response) {
+        deferred.resolve(response);
+      }
+      function errorCallback(response) {
+        deferred.reject(response);
+      }
+      $http = $http || $injector.get('$http');
+      $http(config).then(successCallback, errorCallback);
+    }
+
+    return {
+      /**
+       * Appends HTTP request configuration object with deferred response attached to buffer.
+       */
+      append: function(config, deferred) {
+        buffer.push({
+          config: config,
+          deferred: deferred
+        });
+      },
+
+      /**
+       * Abandon or reject (if reason provided) all the buffered requests.
+       */
+      rejectAll: function(reason) {
+        if (reason) {
+          for (var i = 0; i < buffer.length; ++i) {
+            buffer[i].deferred.reject(reason);
+          }
+        }
+        buffer = [];
+      },
+
+      /**
+       * Retries all the buffered requests clears the buffer.
+       */
+      retryAll: function(updater) {
+        for (var i = 0; i < buffer.length; ++i) {
+          retryHttpRequest(updater(buffer[i].config), buffer[i].deferred);
+        }
+        buffer = [];
+      }
+    };
+  }]);
+  app.factory('appDBBridge', [
+    'appBootStrap',
+    '$q',
+    '$injector',
+    'PouchDB',
+    function (appBootStrap, Q, $injector, PouchDB) {
+    return {
+      /**
+       * returns a document saved in the db
+       * @param  {[type]} query          [description]
+       * @param  {[type]} collectionName Usually a string which should be a dot-notation representation
+       * of the serice/factory name and the method to call.
+       * @return {[type]}                Promise
+       */
+      selectOneDoc: function selectOneDoc (query, collectionName) {
+          collectionName = _.kebabCase(collectionName);
+          var q = Q.defer(), docid = '';
+          if (query.id || query._id) {
+            docid = query.id || query._id;
+          }
+
+          //query
+          PouchDB.get(collectionName + docid)
+          .then(function (doc) {
+            //return the first result.
+            q.resolve(doc);
+
+          }, function (err) {
+            //if the document isnt found,
+            //i use a resolve so the state
+            //transitions successfully allowing the
+            //controllers to initialize. we can call
+            //for data from the server in our controller
+            //which will update our db for subsequent
+            //queries.
+            if (err.status === 404) {
+              q.resolve(null);
+            } else {
+              q.reject(err);
+            }
+          })
+          .catch(function (err) {
+            console.log(err);
+            q.reject(err);
+          });
+
+          return q.promise;
+      },
+      /**
+       * invokes a angularjs module service or factory method, using
+       * the $injector service .get method and passing arguments with
+       * .apply()
+       * @param  {[type]} serviceMethod expects a string with dot-notation,
+       * which is the name of the service / factory and the method it should
+       * execute.
+       * @param  {[type]} args          arguments to be passed to the factory
+       * @return {[type]}               [description]
+       */
+      callServiceMethod: function callServiceMethod (serviceMethod, args) {
+        var $_service;
+        var service_name = serviceMethod.split('.')[0];
+        var service_method = serviceMethod.split('.')[1];
+        $_service = $_service || $injector.get(service_name);
+        return $_service[service_method].apply(null, args);
+      },
+      fetchAndSyncDataToScope: function fetchAndSyncDataToScope (docId, serviceMethod, args) {
+          // var q = Q.defer();
+          var self = this;
+
+          //check for data if docId is supplied
+          //fetch data using the service and argument, callServiceMethod.
+          //this expects a thennable promise is returned.
+          return self.callServiceMethod(serviceMethod, args)
+                .then(function(returnedDoc) {
+                  //there's a chance our result is a $http promise object.
+                  //which means the data we need is on the .data property
+                  var saveThisDoc = returnedDoc.data || returnedDoc;
+                  // var service_name = serviceMethod.split('.')[0];
+                  return self.updateDBCollection(serviceMethod, saveThisDoc);
+                });
+                // .then(self.syncScope(), function (err) {
+                //   return q.reject(err);
+                // })
+                // .catch(function (err) {
+                //   return q.reject(err);
+                // });
+
+
+          // //might not come this far,
+          // //fallback promise
+          // return q.promise;
+      },
+      updateDBCollection: function updateDBCollection (collectionName, doc, upsert) {
+          var q = Q.defer(),
+              docid = '',
+              self = this;
+          collectionName = _.kebabCase(collectionName);
+          if (doc.id || doc._id) {
+            docid = doc.id || doc._id;
+          }
+
+          //find the update
+          self.selectOneDoc(doc, collectionName)
+          .then(function (foundDoc) {
+            //create a new entry
+            if (upsert || !foundDoc) {
+              doc._id = collectionName + docid;
+            }
+            if (foundDoc){
+            //using lodash omit to remove the _id
+              doc._id = foundDoc._id;
+              doc._rev = foundDoc._rev;
+            }
+
+            return PouchDB.put(doc);
+          })
+          .then(function () {
+            q.resolve(doc);
+          }, function (err) {
+            // i use a resolve here, its kind of a fail safe,
+            // since pouchdb gets to throw errors
+            // reject promise when there are document conflicts
+            console.log(err);
+            q.resolve(doc);
+          })
+          .catch(function (errFindnDoc) {
+            console.log(errFindnDoc);
+            q.resolve(doc);
+          });
+
+          return q.promise;
+      },
+      /**
+       * converts an array to an object that can be saved
+       * using PouchDB. each or
+       * @param  {[type]} queueData array containing values to be saved.
+       * @return {[type]}           [description]
+       */
+      prepArraytoObject:  function prepArraytoObject (queueData) {
+        var endObject = {};
+        for (var i = queueData.length - 1; i >= 0; i--) {
+          endObject[i] = queueData[i];
+        }
+        return endObject;
+      },
+      prepObjectToArray: function prepObjectToArray (queueObject, iterator) {
+        var endArray = [], values = _.values(queueObject);
+        for (var i = values.length - 1; i >= 0; i--) {
+          endArray.push(iterator(values[i]));
+        }
+        return endArray;
+      }
+
+    };
+  }]);
   app.factory('cordovaServices', ['$window', '$ionicPlatform', function ($window, $ionicPlatform) {
     return {
       filesystem: function (dataPath, cb) {

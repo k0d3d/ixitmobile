@@ -147,7 +147,7 @@ border-radius: 10px 10px 0 0;
 
 }
 .yellow-font {
-  color: #F0B840;
+  color: #F0B840 !important;
 }
 
 

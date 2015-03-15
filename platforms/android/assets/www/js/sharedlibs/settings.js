@@ -50,8 +50,12 @@ var config_data = {
   'api_config': {
     // 'url': 'http://drugstoc.ng'
     // 'url': 'http://192.168.1.3:3000'
-    'CONSUMER_API_URL': 'http://192.168.43.184:3000',
-    'FILEVAULT_API_URL': 'http://192.168.43.184:3001'
+    // 'CONSUMER_API_URL': 'http://192.168.43.184:3000',
+    // 'FILEVAULT_API_URL': 'http://192.168.43.184:3001',
+    // 'CONSUMER_API_URL': 'http://192.168.1.5:3000',
+    // 'FILEVAULT_API_URL': 'http://192.168.1.5:3001'
+    'CONSUMER_API_URL': 'http://thawing-wave-1121.herokuapp.com',
+    'FILEVAULT_API_URL': 'http://dk33p.herokuapp.com'
     // 'CONSUMER_API_URL': 'http://127.0.0.1:3000',
     // 'FILEVAULT_API_URL': 'http://127.0.0.1:3001'
     // 'CONSUMER_API_URL': 'http://192.168.56.1:3000',

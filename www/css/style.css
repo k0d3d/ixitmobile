@@ -147,9 +147,22 @@ border-radius: 10px 10px 0 0;
 
 }
 .yellow-font {
-  color: #F0B840;
+  color: #F0B840 !important;
+}
+.file-upload-status-icon {
+  position: relative;
+  right: -90%;
+  top: -9px;
+  display: flex;
+  z-index: 100;
+}
+.file-upload-status-icon i.icon {
+  font-size: 20px;
 }
 
+.file-upload-status-icon i.ion-checkmark-circled {
+  color: #00e544;
+}
 
 @media (min-width: 768px) {
   .menu-content {

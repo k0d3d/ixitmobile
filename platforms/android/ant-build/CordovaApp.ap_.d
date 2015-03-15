@@ -217,6 +217,7 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/js/vendor/moment.min.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/js/vendor/imgcache.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/js/vendor/jquery.fittext.js \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/js/vendor/fdb-all.min.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/js/vendor/telephonenumber.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/js/vendor/ng-flow-standalone.js \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/js/vendor/ng-cordova-oauth.js \
@@ -2020,6 +2021,7 @@
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/templates/auth/login.html \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/templates/inc/browse-files.html \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/templates/inc/nav-buttons.html \
+/mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/templates/inc/__li_upload_item.html \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/templates/inc/account-edit.html \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/templates/inc/li_upload_item.html \
 /mnt/c7a1b953-7ddf-4ee3-8ff9-8542d7ddc86c/kingkoded/Projects/ixit_mobile/platforms/android/assets/www/templates/old/playlist.html \

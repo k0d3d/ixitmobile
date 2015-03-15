@@ -43,7 +43,7 @@
   <body ng-app="ixitApp">
     <div class="app-ctrl" ng-controller="AppCtrl" flow-init>
       <ion-nav-view name="maincontent" animation="slide-left-right"></ion-nav-view>
-      <div class="full-screen-container" ng-show="mainCfg.viewNoHeaderIsActive">
+      <div class="full-screen-container" ng-hide="mainCfg.viewNoHeaderIsActive == 1">
         <ion-nav-view name="noheadercontent"></ion-nav-view>
       </div>
     </div>

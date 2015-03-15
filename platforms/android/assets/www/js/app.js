@@ -18,12 +18,12 @@ app.run([
   '$ionicPlatform',
   '$rootScope',
   'appBootStrap',
-  '$document',
-  '$window',
-  // '$state',
+  // '$document',
+  // '$window',
+  '$state',
   // '$stateParams',
   // function($ionicPlatform, $rootScope, appBootStrap, $document, $window, $state, $stateParams) {
-  function($ionicPlatform, $rootScope, appBootStrap) {
+  function($ionicPlatform, $rootScope, appBootStrap, $state) {
 
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -77,6 +77,22 @@ app.run([
     // if (!$window.localStorage.authorizationToken) {
     //     return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
     // }
+$rootScope.$state = $state;
+function message(to, toP, from, fromP) {
+  return from.name  + angular.toJson(fromP) + ' -> ' +     to.name + angular.toJson(toP);
+}
+
+$rootScope.$on('$stateChangeStart', function(evt, to, toP, from, fromP) {
+  console.log('Start:   ' + message(to, toP, from, fromP));
+});
+$rootScope.$on('$stateChangeSuccess', function(evt, to, toP, from, fromP) {
+  console.log('Success: ' + message(to, toP, from, fromP));
+});
+$rootScope.$on('$stateChangeError', function(evt, to, toP, from, fromP, err) {
+  console.log('Error:   ' + message(to, toP, from, fromP), err);
+  // return evt.preventDefault();
+  $state.go(from.name, {} , {reload: true});
+});
 
     //load this device in
     appBootStrap.strapCordovaDevice();
@@ -125,11 +141,12 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         'accountContent@app.tixi' :{
           templateUrl: 'templates/account.html',
           controller: 'AccountCtrl',
-          // resolve: {
-          //   userRootCabinet: function (Keeper) {
-          //     return Keeper.thisUserFiles({});
-          //   }
-          // }
+          resolve: {
+            userData: function (appDBBridge) {
+              var id = window.localStorage.userId || '';
+              return appDBBridge.selectOneDoc({id: id}, 'AuthenticationService.getThisUser');
+            }
+          }
         }
       }
     })
@@ -405,7 +422,7 @@ app.factory('appServices', function ($http, api_config) {
   return {
     ping: function () {
       // return cb(new Error('fuck'));
-      return $http.get(api_config.CONSUMER_API_URL + '/api/v1/routetest')
+      return $http.get('/api/v1/routetest')
       .then(function (status) {
         if (status) {
           return true;
@@ -416,6 +433,9 @@ app.factory('appServices', function ($http, api_config) {
     }
   };
 });
+app.factory('PouchDB', [function () {
+  return new PouchDB('ixit');
+}]);
 // app.provider('ixitAppFactory', ['api_config', function (api_config) {
 //   this.defaults = {};
 

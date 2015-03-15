@@ -54,8 +54,11 @@ app.controller('AccountCtrl', [
   '$ionicPopup',
   'AuthenticationService',
   '$cordovaToast',
-  function ($scope, $ionicPopup, AuthenticationService, $cordovaToast) {
+  'userData',
+  'appDBBridge',
+  function ($scope, $ionicPopup, AuthenticationService, $cordovaToast, userData, appDBBridge) {
   $scope.uiElements = {};
+  $scope.userData  = userData.data;
   $scope.accountPopup = function () {
     $scope.subTitle = '';
     // An elaborate, custom popup
@@ -72,13 +75,14 @@ app.controller('AccountCtrl', [
         },
         {
           text: '<b>Save</b>',
-          type: 'button-dark yellow-font',
+          type: 'button-clear button-dark yellow-font',
           onTap: function(e) {
             e.preventDefault();
-            if (!$scope.form.firstName.length || !$scope.form.firstName.length ) {
-              $scope.subTitle = 'Please enter a the required fields.';
-            }
-            $scope.saveUserProfile($scope.form);
+            console.log($scope);
+            // if (!$scope.userData.firstname.length || !$scope.userData.lastname.length ) {
+            //   $scope.subTitle = 'Please enter a the required fields.';
+            // }
+            $scope.saveUserProfile($scope.userData);
           }
         }
       ]
@@ -100,6 +104,12 @@ app.controller('AccountCtrl', [
         $cordovaToast.showShortBottom('Profile update failed.');
     });
   };
+
+  appDBBridge.fetchAndSyncDataToScope('', 'AuthenticationService.getThisUser', [])
+  .then(function (updatedDoc) {
+    window.localStorage.userId = updatedDoc._id;
+    $scope.userData = updatedDoc;
+  });
 }]);
 
 app.filter('hideSystemFiles', function () {
