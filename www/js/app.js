@@ -128,8 +128,9 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
           templateUrl: 'templates/files.html',
           controller: 'FilesCtrl',
           resolve: {
-            userRootCabinet: function (Keeper) {
-              return Keeper.thisUserFiles({});
+            userRootCabinet: function (appDBBridge) {
+              return appDBBridge.selectOneDoc({}, 'Keeper.thisUserFiles');
+              // return Keeper.thisUserFiles({});
             }
           }
         }

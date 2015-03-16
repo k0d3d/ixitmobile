@@ -1,1 +1,3 @@
+query user files from pouchdb
 use a filter to remove files that are completely uploaded from the queue badghe
+post files to s3

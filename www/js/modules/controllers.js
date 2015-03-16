@@ -2,14 +2,21 @@
 
 var app = angular.module('controllers', []);
 
-app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices) {
+app.controller('FilesCtrl', [
+  '$scope',
+  '$ionicModal',
+  '$timeout',
+  'userRootCabinet',
+  'cordovaServices',
+  'appDBBridge',
+  function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices, appDBBridge) {
   // userRootCabinet.then(function (res) {
   //   $scope.userRootCabinet = res;
   // });
   $scope.userRootCabinet = [];
 
   if (userRootCabinet) {
-    $scope.userRootCabinet = userRootCabinet.data;
+    $scope.userRootCabinet = _.values(_.omit(userRootCabinet, ['_id', '_rev']));
   }
 
 
@@ -30,7 +37,12 @@ app.controller('FilesCtrl', function($scope, $ionicModal, $timeout, userRootCabi
 
     }
   };
-});
+
+  appDBBridge.fetchAndSyncDataToScope('', 'Keeper.thisUserFiles', [])
+  .then(function (updatedDoc) {
+    $scope.userRootCabinet = _.values(_.omit(updatedDoc, ['_id', '_rev']));
+  });
+}]);
 
 app.controller('UploaderCtrl', [
   '$scope',
@@ -101,7 +113,6 @@ app.controller('UploaderCtrl', [
      _.remove(queue, function (n) {
       return n.uniqueIdentifier == file.uniqueIdentifier;
     });
-    console.log(queue);
     appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue));
   });
 }]);
@@ -206,12 +217,16 @@ app.filter('fileicon', ['appData', function (appData) {
     return _.indexOf(appData.filetypeIcons, str) > -1;
   }
   return function (str) {
-    var imgUrl = './img/filetype/' + str.split('/').pop() + '.png';
-    // imageExists(imgUrl, )
-    if (imageExists(str)) {
-      return imgUrl;
+    if (str) {
+      var imgUrl = './img/filetype/' + str.split('/').pop() + '.png';
+      // imageExists(imgUrl, )
+      if (imageExists(str)) {
+        return imgUrl;
+      } else {
+        return './img/filetype/no-img.png';
+      }
     } else {
-      return './img/filetype/no-img.png';
+      return '';
     }
   };
 }])

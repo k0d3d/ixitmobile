@@ -356,11 +356,20 @@
           //this expects a thennable promise is returned.
           return self.callServiceMethod(serviceMethod, args)
                 .then(function(returnedDoc) {
-                  //there's a chance our result is a $http promise object.
-                  //which means the data we need is on the .data property
-                  var saveThisDoc = returnedDoc.data || returnedDoc;
-                  // var service_name = serviceMethod.split('.')[0];
-                  return self.updateDBCollection(serviceMethod, saveThisDoc);
+                    var q = Q.defer();
+
+                    //there's a chance our result is a $http promise object.
+                    //which means the data we need is on the .data property
+                    if (returnedDoc) {
+                      var saveThisDoc = returnedDoc.data || returnedDoc;
+                      // var service_name = serviceMethod.split('.')[0];
+                      if (_.isArray(saveThisDoc)) {
+                        saveThisDoc = self.prepArraytoObject(saveThisDoc);
+                      }
+                      return self.updateDBCollection(serviceMethod, saveThisDoc);
+                    }
+                    q.reject(new Error('no document fetched'));
+                    return q.promise;
                 });
                 // .then(self.syncScope(), function (err) {
                 //   return q.reject(err);
@@ -398,7 +407,7 @@
               doc._rev = foundDoc._rev;
             }
 
-
+            // console.log(JSON.stringify(doc));
             return PouchDB.put(doc);
           })
           .then(function () {
