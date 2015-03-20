@@ -551,17 +551,24 @@
         });
       },
       getFileObject: function (uri, fileMeta, cb) {
-        window.resolveLocalFileSystemURL(uri, function (fileEntry) {
+        console.log(arguments);
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
 
-          fileEntry.file(function (fileObject) {
-            //hack, should always return a file with its real filename and path
-            fileObject.name = (ionic.Platform.version() <= 4.3) ? fileObject.name : fileMeta.fileName;
-            cb(fileObject);
+          fs.root.getFile(fileMeta.fullPath, {create: false}, function (fileEntry) {
+            console.log(fileEntry);
+            fileEntry.file(function (fileObject) {
+              //hack, should always return a file with its real filename and path
+              fileObject.name = (ionic.Platform.version() <= 4.3) ? fileObject.name : fileMeta.fileName;
+              cb(fileObject);
+            }, function (err) {
+              console.log(err);
+              console.log('Error creating file object');
+            });
           }, function (err) {
-            console.log('Error creating file object');
+            cb(err);
           });
         }, function (err) {
-          cb(err);
+          console.log(err);
         });
       }
     };

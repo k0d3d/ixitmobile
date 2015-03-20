@@ -84,14 +84,14 @@
               if (isClient.data) {
                 // appBootStrap.mockOAuth(isClient.data.clientKey, isClient.data.clientSecret, user)
                 appBootStrap.clientOAuth(isClient.data.clientKey, isClient.data.clientSecret, user)
-                .then(function (token) {
+                .then(function () {
                   $rootScope.$broadcast('auth:auth-login-confirmed', status);
                 });
               } else {
                 appBootStrap.clientAuthenticationCreate()
                 .then (function (client) {
                   appBootStrap.clientOAuth(client.data.clientKey, client.data.clientSecret, user)
-                  .then(function (token) {
+                  .then(function () {
                     $rootScope.$broadcast('auth:auth-login-confirmed', status);
                   });
                 });
@@ -169,6 +169,10 @@
           });
       };
 
+      a.addToUserQueue = function addToUserQueue (params) {
+        return $http.post('/api/v2/users/queue', params);
+      };
+
       /**
        * [deleteThisFile deletes a file belonging to the user]
        * @param  {[type]}   ixid
@@ -180,7 +184,7 @@
         .success(function(data){
           callback(data);
         })
-        .error(function(data){
+        .error(function(){
 
         });
       };
@@ -192,12 +196,12 @@
        */
       a.deleteThisFolder = function(folderId, callback){
         $http.delete('/api/v2/users/folder/' + folderId)
-        .success(function(data, status){
+        .success(function(data){
           callback(data);
-        })
-        .error(function(data, status){
-
         });
+        // .error(function(err){
+
+        // });
       };
 
       /**
@@ -206,14 +210,8 @@
        * @param  {Function} callback
        * @return {[type]}
        */
-      a.removeFromQueue = function(mid, callback){
-        $http.delete('/api/v2/users/queue/'+mid)
-        .success(function(data, success){
-          callback();
-        })
-        .error(function(data, success) {
-            /* Act on the event */
-        });
+      a.removeFromQueue = function(mid){
+        return $http.delete('/api/v2/users/queue/'+mid);
       };
 
       /**
@@ -222,28 +220,12 @@
        * @param  {Function} cb
        * @return {[type]}
        */
-      a.updateTags = function(tags, file_id, cb){
-        $http.put('/api/v2/users/files/'+file_id+'/tags', {tags: tags})
-        .success(function(d){
-
-        })
-        .error(function(d){
-
-        });
+      a.updateTags = function(tags, file_id){
+        return $http.put('/api/v2/users/files/'+file_id+'/tags', {tags: tags});
       };
 
-      a.search = function(query, cb){
-        $http.get('/api/search/'+query)
-        .success(function(d){
-          cb(d);
-        })
-        .error(function(err){
-
-        });
-      };
-
-      a.makeFolder = function(foldername, parent, cb){
-
+      a.search = function(query){
+        return $http.get('/api/search/'+query);
       };
 
       return a;
@@ -315,7 +297,7 @@
        * @return {[type]}                Promise
        */
       selectOneDoc: function selectOneDoc (query, collectionName) {
-
+          collectionName = _.kebabCase(collectionName);
           var q = Q.defer(), docid = '';
           if (query.id || query._id) {
             docid = query.id || query._id;
@@ -336,7 +318,7 @@
             //which will update our db for subsequent
             //queries.
             if (err.status === 404) {
-              q.resolve({});
+              q.resolve(null);
             } else {
               q.reject(err);
             }
@@ -366,47 +348,67 @@
         return $_service[service_method].apply(null, args);
       },
       fetchAndSyncDataToScope: function fetchAndSyncDataToScope (docId, serviceMethod, args) {
-          var q = Q.defer();
+          // var q = Q.defer();
           var self = this;
 
           //check for data if docId is supplied
-          if (docId) {
+          //fetch data using the service and argument, callServiceMethod.
+          //this expects a thennable promise is returned.
+          return self.callServiceMethod(serviceMethod, args)
+                .then(function(returnedDoc) {
+                    var q = Q.defer();
 
-          } else {
-            //fetch data using the service and argument, callServiceMethod.
-            //this expects a thennable promise is returned.
-            return self.callServiceMethod(serviceMethod, args)
-                  .then(function(returnedDoc) {
                     //there's a chance our result is a $http promise object.
                     //which means the data we need is on the .data property
-                    var saveThisDoc = returnedDoc.data || returnedDoc;
-                    // var service_name = serviceMethod.split('.')[0];
-                    return self.updateDBCollection(serviceMethod, saveThisDoc);
-                  })
-                  // .then(self.syncScope(), function (err) {
-                  //   return q.reject(err);
-                  // })
-                  .catch(function (err) {
-                    return q.reject(err);
-                  });
-          }
+                    if (returnedDoc) {
+                      var saveThisDoc = returnedDoc.data || returnedDoc;
+                      // var service_name = serviceMethod.split('.')[0];
+                      if (_.isArray(saveThisDoc)) {
+                        saveThisDoc = self.prepArraytoObject(saveThisDoc);
+                      }
+                      return self.updateDBCollection(serviceMethod, saveThisDoc);
+                    }
+                    q.reject(new Error('no document fetched'));
+                    return q.promise;
+                });
+                // .then(self.syncScope(), function (err) {
+                //   return q.reject(err);
+                // })
+                // .catch(function (err) {
+                //   return q.reject(err);
+                // });
 
-          //might not come this far,
-          //fallback promise
-          return q.promise;
+
+          // //might not come this far,
+          // //fallback promise
+          // return q.promise;
       },
-      updateDBCollection: function updateDBCollection (collectionName, doc) {
-          var q = Q.defer(), docid = '', self = this;
+      updateDBCollection: function updateDBCollection (collectionName, doc, upsert) {
+          var q = Q.defer(),
+              docid = '',
+              self = this;
+          collectionName = _.kebabCase(collectionName);
           if (doc.id || doc._id) {
             docid = doc.id || doc._id;
+            doc.remoteid = docid;
           }
+
 
           //find the update
           self.selectOneDoc(doc, collectionName)
           .then(function (foundDoc) {
+            //create a new entry
+            if (upsert || !foundDoc) {
+              doc._id = collectionName + docid;
+            }
+            if (foundDoc){
             //using lodash omit to remove the _id
-            var newDoc = _.omit(doc, '_id');
-            return PouchDB.put(newDoc, foundDoc._id, foundDoc._rev);
+              doc._id = foundDoc._id;
+              doc._rev = foundDoc._rev;
+            }
+
+            // console.log(JSON.stringify(doc));
+            return PouchDB.put(doc);
           })
           .then(function () {
             q.resolve(doc);
@@ -414,6 +416,7 @@
             // i use a resolve here, its kind of a fail safe,
             // since pouchdb gets to throw errors
             // reject promise when there are document conflicts
+            console.log(err);
             q.resolve(doc);
           })
           .catch(function (errFindnDoc) {
@@ -422,6 +425,26 @@
           });
 
           return q.promise;
+      },
+      /**
+       * converts an array to an object that can be saved
+       * using PouchDB. each or
+       * @param  {[type]} queueData array containing values to be saved.
+       * @return {[type]}           [description]
+       */
+      prepArraytoObject:  function prepArraytoObject (queueData) {
+        var endObject = {};
+        for (var i = queueData.length - 1; i >= 0; i--) {
+          endObject[i] = queueData[i];
+        }
+        return endObject;
+      },
+      prepObjectToArray: function prepObjectToArray (queueObject, iterator) {
+        var endArray = [], values = _.values(queueObject);
+        for (var i = values.length - 1; i >= 0; i--) {
+          endArray.push(iterator(values[i]));
+        }
+        return endArray;
       }
 
     };
@@ -528,17 +551,24 @@
         });
       },
       getFileObject: function (uri, fileMeta, cb) {
-        window.resolveLocalFileSystemURL(uri, function (fileEntry) {
+        console.log(arguments);
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
 
-          fileEntry.file(function (fileObject) {
-            //hack, should always return a file with its real filename and path
-            fileObject.name = (ionic.Platform.version() <= 4.3) ? fileObject.name : fileMeta.fileName;
-            cb(fileObject);
+          fs.root.getFile(fileMeta.fullPath, {create: false}, function (fileEntry) {
+            console.log(fileEntry);
+            fileEntry.file(function (fileObject) {
+              //hack, should always return a file with its real filename and path
+              fileObject.name = (ionic.Platform.version() <= 4.3) ? fileObject.name : fileMeta.fileName;
+              cb(fileObject);
+            }, function (err) {
+              console.log(err);
+              console.log('Error creating file object');
+            });
           }, function (err) {
-            console.log('Error creating file object');
+            cb(err);
           });
         }, function (err) {
-          cb(err);
+          console.log(err);
         });
       }
     };

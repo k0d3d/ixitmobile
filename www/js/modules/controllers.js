@@ -60,22 +60,38 @@ app.controller('UploaderCtrl', [
     return  _.omit(objval, ['_id', '_rev']);
   }
 
-  //check if null is returned, since the selectOneDoc method returns
-  //null if no doc is found
-  var queue;
-  if (queueData) {
-    queue = _.values(omit_pouch_reserved_keys(queueData));
-    // add files on the queue to our flow file queue
-    angular.forEach(queue, function (onefile) {
-      cordovaServices.returnFilePathName(onefile.uri, function (fileMeta) {
-        cordovaServices.getFileObject(onefile.uri, fileMeta, function (fileObject) {
-          $scope.$flow.addFile(fileObject);
-          // files.push(fileObject);
-        });
-      });
-    });
-  } else {
-    queue = [];
+  $scope.doYa = function () {
+
+
+    //check if null is returned, since the selectOneDoc method returns
+    //null if no doc is found
+    var queue;
+    if (queueData) {
+      queue = _.values(omit_pouch_reserved_keys(queueData));
+
+          cordovaServices.returnFilePathName(queue[0].uri, function (fileMeta) {
+            cordovaServices.getFileObject(fileMeta.fullPath, fileMeta, function (fileObject) {
+              // fileObject.uri = uri;
+              $scope.$flow.addFile(fileObject, undefined, {});
+            });
+          });
+
+
+      // add files on the queue to our flow file queue
+      // angular.forEach(queue, function (onefile) {
+      //   cordovaServices.returnFilePathName(onefile.uri, function (fileMeta) {
+      //     console.log(fileMeta);
+      //     cordovaServices.getFileObject(onefile.uri, fileMeta, function (fileObject) {
+      //       console.log(fileObject);
+      //       $scope.$flow.addFile(fileObject);
+      //       // files.push(fileObject);
+      //       // $scope.$flow.addFile(fileObject, undefined, {uri: onefile.uri});
+      //     });
+      //   });
+      // });
+    } else {
+      queue = [];
+    }
   }
 
   $scope.open_chooser = function () {
@@ -84,8 +100,9 @@ app.controller('UploaderCtrl', [
 
         cordovaServices.returnFilePathName(uri, function (fileMeta) {
           cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
-            fileObject.uri = uri;
-            $scope.$flow.addFile(fileObject);
+            // fileObject.uri = uri;
+            console.log(uri);
+            $scope.$flow.addFile(fileObject, undefined, {uri: uri});
           });
         });
 
@@ -95,18 +112,20 @@ app.controller('UploaderCtrl', [
     }
   };
 
-  $scope.$flow.on('fileAdded', function (file) {
-    queue.push(pick_file_object(file));
-    //save to queue
-    appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue))
-    .then(function () {
-      // console.log(doc);
-    }, function (err) {
-      console.lod(err);
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
+  $scope.$flow.on('fileAdded', function (file, e, uri) {
+    if (uri.uri) {
+      queue.push(_.extend(uri, pick_file_object(file)));
+      //save to queue
+      appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue))
+      .then(function () {
+        // console.log(doc);
+      }, function (err) {
+        console.lod(err);
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
+    }
   });
 
   $scope.$flow.on('fileSuccess', function (file) {

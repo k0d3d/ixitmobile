@@ -12,11 +12,17 @@
                 {{eachFile.sizeUploaded() | formatFileSize}} / {{eachFile.file.size | formatFileSize}}
               </span>
             </p>
-            <div class="file-upload-status-icon" ng-hide="eachFile.error || !eachFile.isUploading()">
+            <!-- show if is uploading -->
+            <div class="file-upload-status-icon" ng-show="eachFile.isUploading()" ng-click="eachFile.cancel()">
               <i class="icon ion-close-circled"></i>
             </div>
-            <div class="file-upload-status-icon" ng-hide="eachFile.error || eachFile.isUploading()" ng-show="eachFile.isComplete()">
+            <!-- show if No errors and is complete -->
+            <div class="file-upload-status-icon" ng-show="!eachFile.error && eachFile.isComplete()">
               <i class="icon ion-checkmark-circled"></i>
+            </div>
+            <!-- show if errors -->
+            <div class="file-upload-status-icon" ng-show="eachFile.error">
+              <i class="icon ion-android-alert"></i>
             </div>
           </div>
           <div class="meter" ng-hide="eachFile.error || !eachFile.isUploading()">
@@ -34,12 +40,9 @@
         </div>
         <div class="post-item upload-info" ng-show="eachFile.error">
           <div style="margin-top: 2px">
-            <span style="float:left">
 
-              <a class="button button-small icon-left ion-alert-circled actconsface button-outline button-assertive" ng-href="#">An error occured!</a>
-            </span>
-            <span style="float: right; margin-bottom: 2px">
-              <a class="button button-small icon-left ion-share actconsface button-calm">Retry</a>
+            <span style="float: left; margin-bottom: 2px">
+              <a class="button button-small actconsface button-calm button-clear" ng-click="eachFile.retry()">Retry</a>
             </span>
           </div>
 

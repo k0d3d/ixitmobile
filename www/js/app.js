@@ -208,7 +208,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
 
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/tixi/upload');
+  $urlRouterProvider.otherwise('/app/tixi/files');
 
   $httpProvider.interceptors.push('tokenInterceptor');
   $httpProvider.interceptors.push('connectionInterceptor');
@@ -404,10 +404,10 @@ app.controller('TixiCtrl',
 
   $scope.$flow.on('filesAdded', function (files) {
     // console.log($cordovaToast);
-    // if ($cordovaToast) {
-    //   $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
-    // }
-    console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));
+    if ($cordovaToast) {
+      $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
+    }
+    // console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));
 
   });
 

@@ -128,8 +128,9 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
           templateUrl: 'templates/files.html',
           controller: 'FilesCtrl',
           resolve: {
-            userRootCabinet: function (Keeper) {
-              return Keeper.thisUserFiles({});
+            userRootCabinet: function (appDBBridge) {
+              return appDBBridge.selectOneDoc({}, 'Keeper.thisUserFiles');
+              // return Keeper.thisUserFiles({});
             }
           }
         }
@@ -155,7 +156,12 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
       views: {
         'uploadsContent@app.tixi' :{
           templateUrl: 'templates/upload.html',
-          controller: 'UploaderCtrl'
+          controller: 'UploaderCtrl',
+          resolve: {
+            queueData: function (appDBBridge) {
+              return appDBBridge.selectOneDoc({}, 'Keeper.thisUserQueue');
+            }
+          }
         }
       }
     })
@@ -202,7 +208,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
 
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/tixi/upload');
+  $urlRouterProvider.otherwise('/app/tixi/files');
 
   $httpProvider.interceptors.push('tokenInterceptor');
   $httpProvider.interceptors.push('connectionInterceptor');
@@ -294,7 +300,20 @@ app.controller('TixiCtrl',
   '$window',
   '$cordovaToast',
   '$interpolate',
-  function($scope, $state, appBootStrap, $ionicLoading, $ionicActionSheet, $timeout, appServices, cordovaServices, $window, $cordovaToast, $interpolate) {
+  'appDBBridge',
+  function(
+    $scope,
+    $state,
+    appBootStrap,
+    $ionicLoading,
+    $ionicActionSheet,
+    $timeout,
+    appServices,
+    cordovaServices,
+    $window,
+    $cordovaToast,
+    $interpolate,
+    appDBBridge) {
 
   if (!appBootStrap.isBearerTokenPresent()) {
     return $state.transitionTo('app.fs.welcome', {}, { reload: true, inherit: true, notify: true });
@@ -385,10 +404,19 @@ app.controller('TixiCtrl',
 
   $scope.$flow.on('filesAdded', function (files) {
     // console.log($cordovaToast);
-    // if ($cordovaToast) {
-    //   $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
-    // }
-    console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));
+    if ($cordovaToast) {
+      $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
+    }
+    // console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));
+
+  });
+
+  $scope.$flow.on('filesSubmitted', function () {
+
+    $scope.$flow.upload();
+  });
+  $scope.$flow.on('fileSuccess', function (file, message) {
+    file.ixid = JSON.parse(message).ixid;
   });
 }]);
 app.factory('connectionInterceptor', function($q, $rootScope) {

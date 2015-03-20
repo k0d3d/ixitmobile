@@ -97,7 +97,11 @@ align-items: center;
   white-space: nowrap;
   width: 50%;
 }
-.u-l-i {
+.u-l-i-l {
+  padding-bottom: 0;
+  border-bottom: solid 2px rgba(67, 67, 67, 0.5);
+}
+.u-l-i- {
   padding-bottom: 0;
   border-bottom: solid 2px #434343;
 }
@@ -162,6 +166,9 @@ border-radius: 10px 10px 0 0;
 
 .file-upload-status-icon i.ion-checkmark-circled {
   color: #00e544;
+}
+.file-upload-status-icon i.ion-android-alert{
+  color: red;
 }
 
 @media (min-width: 768px) {
