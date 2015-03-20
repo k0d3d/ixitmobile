@@ -97,11 +97,79 @@ align-items: center;
   white-space: nowrap;
   width: 50%;
 }
-.u-l-i {
+.u-l-i-l {
+  padding-bottom: 0;
+  border-bottom: solid 2px rgba(67, 67, 67, 0.5);
+}
+.u-l-i- {
   padding-bottom: 0;
   border-bottom: solid 2px #434343;
 }
+.slider { height: 100%; text-align: center }
+.scroll { height: 100% }
 
+.has-header.has-subheader.has-tabs-top {
+  top: 92px;
+}
+
+.rounded-profile-thumb {
+  border: solid 1px #ddd;
+  background-color: white;
+  border-radius: 100px;
+  height: 200px;
+  width: 200px;
+  margin: 0 auto;
+  font-size: 13em;
+}
+.account-popup .popup-body{
+  padding: 3px;
+}
+.account-popup .item-input{
+  padding: 3px;
+border: none;
+border-bottom: solid 1px #E0E0E0;
+}
+.account-popup .popup input{
+  background-color: transparent;
+  padding: 5px;
+}
+.account-popup .popup input:focus{
+background-color: rgba(240, 184, 64, 0.51);
+color: black;
+}
+.account-popup .popup-head{
+background-color: #F0B840;
+border-radius: 10px 10px 0 0;
+}
+.account-popup .popup-head h1{
+   color: white;
+}
+.account-popup .popup{
+  width: 300px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+
+}
+.yellow-font {
+  color: #F0B840 !important;
+}
+.file-upload-status-icon {
+  position: relative;
+  right: -90%;
+  top: -9px;
+  display: flex;
+  z-index: 100;
+}
+.file-upload-status-icon i.icon {
+  font-size: 20px;
+}
+
+.file-upload-status-icon i.ion-checkmark-circled {
+  color: #00e544;
+}
+.file-upload-status-icon i.ion-android-alert{
+  color: red;
+}
 
 @media (min-width: 768px) {
   .menu-content {

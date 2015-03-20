@@ -1,10 +1,8 @@
 (function () {
-// Ionic Starter App
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'ixitApp' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-// 'ixitApp.controllers' is found in controllers.js
 var app = angular.module('ixitApp', [
   'ionic',
   'ngCordova',
@@ -20,12 +18,12 @@ app.run([
   '$ionicPlatform',
   '$rootScope',
   'appBootStrap',
-  '$document',
-  '$window',
-  // '$state',
+  // '$document',
+  // '$window',
+  '$state',
   // '$stateParams',
   // function($ionicPlatform, $rootScope, appBootStrap, $document, $window, $state, $stateParams) {
-  function($ionicPlatform, $rootScope, appBootStrap) {
+  function($ionicPlatform, $rootScope, appBootStrap, $state) {
 
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -52,33 +50,49 @@ app.run([
         alert('ImgCache init: error! Check the log for errors');
     });
 
-    window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_STREAM,
-        function(url) {
-          console.log(url);
-            // url is the value of EXTRA_TEXT
-        }, function() {
-            // There was no extra supplied.
-            // console.log('Nothing sent in');
-        }
-    );
-    window.plugins.webintent.getUri(function(url) {
-      if(url !== '') {
-        // url is the url the intent was launched with
-        console.log(url);
-      }
-    });
-    window.plugins.webintent.onNewIntent(function(url) {
-      console.log(url);
-        if(url !== '') {
-          console.log(url);
-            // url is the url that was passed to onNewIntent
-        }
-    });
+    // window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_STREAM,
+    //     function(url) {
+    //       console.log(url);
+    //         // url is the value of EXTRA_TEXT
+    //     }, function() {
+    //         // There was no extra supplied.
+    //         // console.log('Nothing sent in');
+    //     }
+    // );
+    // window.plugins.webintent.getUri(function(url) {
+    //   if(url !== '') {
+    //     // url is the url the intent was launched with
+    //     console.log(url);
+    //   }
+    // });
+    // window.plugins.webintent.onNewIntent(function(url) {
+    //   console.log(url);
+    //     if(url !== '') {
+    //       console.log(url);
+    //         // url is the url that was passed to onNewIntent
+    //     }
+    // });
 
     // if thr no no auth..token in app local storage, treat d user as a first time user
     // if (!$window.localStorage.authorizationToken) {
     //     return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
     // }
+$rootScope.$state = $state;
+function message(to, toP, from, fromP) {
+  return from.name  + angular.toJson(fromP) + ' -> ' +     to.name + angular.toJson(toP);
+}
+
+$rootScope.$on('$stateChangeStart', function(evt, to, toP, from, fromP) {
+  console.log('Start:   ' + message(to, toP, from, fromP));
+});
+$rootScope.$on('$stateChangeSuccess', function(evt, to, toP, from, fromP) {
+  console.log('Success: ' + message(to, toP, from, fromP));
+});
+$rootScope.$on('$stateChangeError', function(evt, to, toP, from, fromP, err) {
+  console.log('Error:   ' + message(to, toP, from, fromP), err);
+  // return evt.preventDefault();
+  $state.go(from.name, {} , {reload: true});
+});
 
     //load this device in
     appBootStrap.strapCordovaDevice();
@@ -110,23 +124,44 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
     .state('app.tixi.files', {
       url: '/files',
       views: {
-        'viewContent@app.tixi' :{
+        'cabinetContent@app.tixi' :{
           templateUrl: 'templates/files.html',
-          // controller: 'FilesCtrl',
-          // resolve: {
-          //   userRootCabinet: function (Keeper) {
-          //     return Keeper.thisUserFiles({});
-          //   }
-          // }
+          controller: 'FilesCtrl',
+          resolve: {
+            userRootCabinet: function (appDBBridge) {
+              return appDBBridge.selectOneDoc({}, 'Keeper.thisUserFiles');
+              // return Keeper.thisUserFiles({});
+            }
+          }
+        }
+      }
+    })
+    .state('app.tixi.account', {
+      url: '/account',
+      views: {
+        'accountContent@app.tixi' :{
+          templateUrl: 'templates/account.html',
+          controller: 'AccountCtrl',
+          resolve: {
+            userData: function (appDBBridge) {
+              var id = window.localStorage.userId || '';
+              return appDBBridge.selectOneDoc({id: id}, 'AuthenticationService.getThisUser');
+            }
+          }
         }
       }
     })
     .state('app.tixi.upload', {
       url: '/upload',
       views: {
-        'viewContent@app.tixi' :{
+        'uploadsContent@app.tixi' :{
           templateUrl: 'templates/upload.html',
-          controller: 'UploaderCtrl'
+          controller: 'UploaderCtrl',
+          resolve: {
+            queueData: function (appDBBridge) {
+              return appDBBridge.selectOneDoc({}, 'Keeper.thisUserQueue');
+            }
+          }
         }
       }
     })
@@ -167,11 +202,13 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         chunkRetryInterval: 5000,
     };
 
-
+    flowFactoryProvider.on('catchAll', function () {
+      // console.log(arguments);
+    });
 
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/tixi/upload');
+  $urlRouterProvider.otherwise('/app/tixi/files');
 
   $httpProvider.interceptors.push('tokenInterceptor');
   $httpProvider.interceptors.push('connectionInterceptor');
@@ -221,11 +258,11 @@ app.controller('AppCtrl' , [
   'appBootStrap',
   function ($scope, $state, $stateParams, $window, appBootStrap) {
   $scope.mainCfg = {
-    viewNoHeaderIsActive: true
+    viewNoHeaderIsActive: appBootStrap.isBearerTokenPresent()
   };
 
   if (!$window.localStorage.authorizationToken) {
-    return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
+    return $state.transitionTo('app.fs.welcome', $stateParams, { inherit: true, notify: true });
   }
 
 
@@ -248,7 +285,6 @@ app.controller('AppCtrl' , [
       }
     }
   });
-
 }]);
 
 app.controller('TixiCtrl',
@@ -263,7 +299,25 @@ app.controller('TixiCtrl',
   'cordovaServices',
   '$window',
   '$cordovaToast',
-  function($scope, $state, appBootStrap, $ionicLoading, $ionicActionSheet, $timeout, appServices, cordovaServices, $window, $cordovaToast) {
+  '$interpolate',
+  'appDBBridge',
+  function(
+    $scope,
+    $state,
+    appBootStrap,
+    $ionicLoading,
+    $ionicActionSheet,
+    $timeout,
+    appServices,
+    cordovaServices,
+    $window,
+    $cordovaToast,
+    $interpolate,
+    appDBBridge) {
+
+  if (!appBootStrap.isBearerTokenPresent()) {
+    return $state.transitionTo('app.fs.welcome', {}, { reload: true, inherit: true, notify: true });
+  }
 
   var connection;
   $scope.isConnected = false;
@@ -273,71 +327,6 @@ app.controller('TixiCtrl',
     dir: [],
     files: []
   };
-
-  // $scope.$watch('isConnected', function (n) {
-  //   if (!n) {
-  //     $ionicLoading.show({
-  //       template: '<i class="ion-looping" data-pack="default" data-tags="refresh, animation" data-animation="true"></i>'
-  //     });
-  //   } else {
-  //     $ionicLoading.hide();
-  //   }
-  // });
-  //
-  // $scope.doLogin =
-
-  //load login modal
-  // $ionicModal.fromTemplateUrl('templates/auth/login.html',
-  //   {
-  //     scope: $scope,
-  //     animation: 'slide-in-up',
-  //     focusFirstInput: true,
-  //     backdropClickToClose: false,
-  //     hardwareBackButtonClose: false
-  //   }
-  // ).then(function (modal) {
-  //   $scope.loginModal = modal;
-  // });
-
-  //load file browser modal
-  // $ionicModal.fromTemplateUrl('templates/inc/browse-files.html',
-  //   {
-  //     scope: $scope,
-  //     animation: 'slide-in-up',
-  //     focusFirstInput: true,
-  //     backdropClickToClose: false,
-  //     hardwareBackButtonClose: true
-  //   }
-  // ).then(function (modal) {
-  //   $scope.fileBrowser = modal;
-  // });
-
-  // Opens an action panel so the user can choose what type
-  // of upload they wish to make
-  // $scope.select_up_action = function () {
-  //   // Show the action sheet
-  //   var hideSheet = $ionicActionSheet.show({
-  //     buttons: [
-  //      { text: 'Picture or Video' },
-  //      { text: 'Other Files' },
-  //      { text: 'A Folder' }
-  //     ],
-  //     titleText: 'What do you want to upload?',
-  //     cancelText: 'Cancel',
-  //     cancel: function() {
-  //         // add cancel code..
-  //       },
-  //     buttonClicked: function() {
-  //       $scope.fileBrowser.show();
-
-  //       return true;
-  //     }
-  //   });
-  //   // // For example's sake, hide the sheet after two seconds
-  //   // $timeout(function() {
-  //   //  hideSheet();
-  //   // }, 2000);
-  // };
 
   $scope.start_uploading  = function (FLOW) {
     if (FLOW.files.length) {
@@ -399,9 +388,9 @@ app.controller('TixiCtrl',
   });
 
 
-  //checks if there is an authorization token on
+  //checks if there is a bearer authorization token on
   //our localStorage
-  if (!appBootStrap.isBearerTokenPresent()) {
+  if (appBootStrap.isBearerTokenPresent() === 2) {
     $scope.$emit('auth:auth-login-required');
   }
 
@@ -411,6 +400,23 @@ app.controller('TixiCtrl',
     appBootStrap.activeModal.remove();
     $scope.fileBrowser.remove();
     $timeout.cancel(connection);
+  });
+
+  $scope.$flow.on('filesAdded', function (files) {
+    // console.log($cordovaToast);
+    if ($cordovaToast) {
+      $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
+    }
+    // console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));
+
+  });
+
+  $scope.$flow.on('filesSubmitted', function () {
+
+    $scope.$flow.upload();
+  });
+  $scope.$flow.on('fileSuccess', function (file, message) {
+    file.ixid = JSON.parse(message).ixid;
   });
 }]);
 app.factory('connectionInterceptor', function($q, $rootScope) {
@@ -444,7 +450,7 @@ app.factory('appServices', function ($http, api_config) {
   return {
     ping: function () {
       // return cb(new Error('fuck'));
-      return $http.get(api_config.CONSUMER_API_URL + '/api/v1/routetest')
+      return $http.get('/api/v1/routetest')
       .then(function (status) {
         if (status) {
           return true;
@@ -455,6 +461,9 @@ app.factory('appServices', function ($http, api_config) {
     }
   };
 });
+app.factory('PouchDB', [function () {
+  return new PouchDB('ixit');
+}]);
 // app.provider('ixitAppFactory', ['api_config', function (api_config) {
 //   this.defaults = {};
 

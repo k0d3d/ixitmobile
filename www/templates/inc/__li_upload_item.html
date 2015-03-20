@@ -1,0 +1,66 @@
+      <div class="item item-icon-left u-l-i">
+        <div class="pre-item">
+          <div class="ex-bar">
+            <i class="icon">
+              <img ng-src="{{eachFile.file.type | fileicon}} " img-cache class="queue-file-type-icon">
+            </i>
+            <h2 class="info-file-name">
+              {{eachFile.name}}
+            </h2>
+            <p>
+              <span class="info-file-size">
+                {{eachFile.sizeUploaded() | formatFileSize}} / {{eachFile.file.size | formatFileSize}}
+              </span>
+            </p>
+          </div>
+          <div class="meter" ng-hide="eachFile.error">
+            <span class="calm" ng-style="{'width': (eachFile.progress() * 100) + '%'}"></span>
+          </div>
+        </div>
+        <div class="post-item upload-props" ng-hide="eachFile.isComplete() || eachFile.error">
+          <div class="actbtns">
+            <span>
+
+              <i class="icon ion-play actconsface" ng-show="!eachFile.isUploading()" ng-click="eachFile.resume()">Start</i>
+              <i class="icon ion-pause actconsface" ng-show="eachFile.isUploading()" ng-click="eachFile.pause()">Pause</i>
+            </span>
+            <span>
+              <i class="icon ion-close-round" ng-click="eachFile.cancel()">Cancel</i>
+            </span>
+          </div>
+          <div class="actstats">
+            <span>
+              <i class="icon ion-speedometer"></i>
+              {{_formatBitrate(eachFile.currentSpeed)}}
+            </span>
+            <span style="border-right: none;">
+              <i class="icon ion-clock"></i>
+              {{eachFile.timeRemaining()}}
+            </span>
+          </div>
+        </div>
+        <div class="post-item upload-info" ng-show="eachFile.isComplete() && !eachFile.error" ng-hide"eachFile.error">
+          <div style="margin-top: 2px">
+            <span style="float:left">
+
+              <a class="button button-small icon-left ion-pound actconsface button-clear button-positive" ng-show="!eachFile.isUploading()"  ng-href="http://i-xi.t/{{eachFile.ixid}}">{{eachFile.ixid}}</a>
+            </span>
+            <span style="float: right; margin-bottom: 2px">
+              <a class="button button-small icon-left ion-share actconsface button-calm" ng-show="!eachFile.isUploading()" ng-href="http://i-xi.t/{{eachFile.ixid}}">Share</a>
+            </span>
+          </div>
+
+        </div>
+        <div class="post-item upload-info" ng-show="eachFile.error">
+          <div style="margin-top: 2px">
+            <span style="float:left">
+
+              <a class="button button-small icon-left ion-alert-circled actconsface button-outline button-assertive" ng-href="#">An error occured!</a>
+            </span>
+            <span style="float: right; margin-bottom: 2px">
+              <a class="button button-small icon-left ion-share actconsface button-calm">Retry</a>
+            </span>
+          </div>
+
+        </div>
+      </div>

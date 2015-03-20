@@ -79,7 +79,7 @@
                   text: '<b>Login Now</b>',
                   type: 'button-positive',
                   onTap: function(e) {
-                    $state.go('app.ds.login');
+                    $state.go('app.fs.login');
                   }
                 }
               ]

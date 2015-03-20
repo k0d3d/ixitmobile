@@ -22,7 +22,9 @@
         "angular": true,
         "$": true,
         "jQuery": true,
-        "cordova": true
+        "cordova": true,
+        "moment": true,
+        "_": true
     },
     "predef": [ // Extra globals.
         "define",

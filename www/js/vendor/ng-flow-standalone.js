@@ -512,14 +512,17 @@
       return totalSize > 0 ? totalDone / totalSize : 0;
     },
 
+    // modified @addFiles
+
     /**
      * Add a HTML5 File object to the list of files.
      * @function
      * @param {File} file
      * @param {Event} [event] event is optional
+     * @param {Object} [optData] optional data to be passed to the event handler
      */
-    addFile: function (file, event) {
-      this.addFiles([file], event);
+    addFile: function (file, event, optData) {
+      this.addFiles([file], event, optData);
     },
 
     /**
@@ -528,7 +531,7 @@
      * @param {FileList|Array} fileList
      * @param {Event} [event] event is optional
      */
-    addFiles: function (fileList, event) {
+    addFiles: function (fileList, event, optData) {
       var files = [];
       each(fileList, function (file) {
         // Directories have size `0` and name `.`
@@ -536,12 +539,12 @@
         if (!(file.size % 4096 === 0 && (file.name === '.' || file.fileName === '.')) &&
           !this.getFromUniqueIdentifier(this.generateUniqueIdentifier(file))) {
           var f = new FlowFile(this, file);
-          if (this.fire('fileAdded', f, event)) {
+          if (this.fire('fileAdded', f, event, optData)) {
             files.push(f);
           }
         }
       }, this);
-      if (this.fire('filesAdded', files, event)) {
+      if (this.fire('filesAdded', files, event, optData)) {
         each(files, function (file) {
           if (this.opts.singleFile && this.files.length > 0) {
             this.removeFile(this.files[0]);
@@ -1560,13 +1563,16 @@ angular.module('flow.provider', [])
     };
   };
 });
+/**
+ * modified
+ */
 angular.module('flow.init', ['flow.provider'])
   .controller('flowCtrl', ['$scope', '$attrs', '$parse', 'flowFactory',
   function ($scope, $attrs, $parse, flowFactory) {
 
     var options = angular.extend({
       query: {
-        'x-Authr': $scope.currentFolder
+        'x-Authr': window.localStorage.userId
       }
     }, $scope.$eval($attrs.flowInit));
 
@@ -1593,18 +1599,18 @@ angular.module('flow.init', ['flow.provider'])
           $scope.$on('$destroy', function () {
             $parse($attrs.flowName).assign($scope);
           });
-        }      
+        }
     }
 
-    $scope.$watch('currentFolder', function (n) {
-      if (n) {    
-        $scope.$flow.opts.query = {
-          'folder': $scope.currentFolder,
-          'x-Authr' : $scope.cuser
-        };
-        // return console.log($scope.$flow.opts);
-      }
-    });
+    // $scope.$watch('currentFolder', function (n) {
+    //   if (n) {
+    //     $scope.$flow.opts.query = {
+    //       'folder': $scope.currentFolder,
+    //       'x-Authr' : $scope.cuser
+    //     };
+    //     // return console.log($scope.$flow.opts);
+    //   }
+    // });
 
     __initFlowOptions(options);
   }])
