@@ -661,6 +661,7 @@
      * Reference to file
      * @type {File}
      */
+    // this.file = new Blob([file], {type: file.type});
     this.file = file;
 
     /**
@@ -1243,13 +1244,16 @@
         (this.fileObj.file.mozSlice ? 'mozSlice' :
           (this.fileObj.file.webkitSlice ? 'webkitSlice' :
             'slice')));
+      // modifed here start
+      // this.fileObj.file = new Blob([this.fileObj.file], {type: this.fileObj.file.type});
+      // modification stop
       var bytes = this.fileObj.file[func](this.startByte, this.endByte);
 
       // Set up request and listen for event
       this.xhr = new XMLHttpRequest();
       this.xhr.upload.addEventListener('progress', this.progressHandler, false);
-      this.xhr.addEventListener("load", this.doneHandler, false);
-      this.xhr.addEventListener("error", this.doneHandler, false);
+      this.xhr.addEventListener('load', this.doneHandler, false);
+      this.xhr.addEventListener('error', this.doneHandler, false);
 
       var data = this.prepareXhrRequest('POST', this.flowObj.opts.method, bytes);
 

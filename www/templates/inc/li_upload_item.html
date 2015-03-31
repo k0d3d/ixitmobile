@@ -1,15 +1,15 @@
-      <div class="item item-icon-left u-l-i">
+      <ion-item class="item-icon-left u-l-i">
         <div class="pre-item">
           <div class="ex-bar">
             <i class="icon">
               <img ng-src="{{eachFile.file.type | fileicon}} " img-cache class="queue-file-type-icon">
             </i>
             <h2 class="info-file-name">
-              {{eachFile.name}}
+              {{::eachFile.name}}
             </h2>
             <p>
               <span class="info-file-size">
-                {{eachFile.sizeUploaded() | formatFileSize}} / {{eachFile.file.size | formatFileSize}}
+                {{eachFile.sizeUploaded() | formatFileSize}} / {{::eachFile.file.size | formatFileSize}}
               </span>
             </p>
             <!-- show if is uploading -->
@@ -47,4 +47,4 @@
           </div>
 
         </div>
-      </div>
+      </ion-item>

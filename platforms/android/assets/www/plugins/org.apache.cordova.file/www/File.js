@@ -29,6 +29,7 @@ cordova.define("org.apache.cordova.file.File", function(require, exports, module
  */
 
 var File = function(name, localURL, type, lastModifiedDate, size){
+    // Blob.call(window);
     this.name = name || '';
     this.localURL = localURL || null;
     this.type = type || null;
@@ -42,6 +43,8 @@ var File = function(name, localURL, type, lastModifiedDate, size){
     this.end = this.size;
 };
 
+
+// File.prototype = Object.create(Blob.prototype);
 /**
  * Returns a "slice" of the file. Since Cordova Files don't contain the actual
  * content, this really returns a File with adjusted start and end.

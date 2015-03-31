@@ -9,7 +9,8 @@ app.controller('FilesCtrl', [
   'userRootCabinet',
   'cordovaServices',
   'appDBBridge',
-  function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices, appDBBridge) {
+  'appBootStrap',
+  function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices, appDBBridge, appBootStrap) {
   // userRootCabinet.then(function (res) {
   //   $scope.userRootCabinet = res;
   // });
@@ -21,12 +22,16 @@ app.controller('FilesCtrl', [
 
 
   $scope.open_chooser = function () {
+    if (!appBootStrap.isBrowser()) return false;
     if (fileChooser) {
       fileChooser.open(function(uri) {
-
         cordovaServices.returnFilePathName(uri, function (fileMeta) {
           cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
-            $scope.$flow.addFile(fileObject);
+            if (!fileObject.length) {
+              $scope.$flow.addFile(fileObject, undefined, {uri: onefile.uri});
+            } else {
+              $scope.$flow.addFiles(fileObject, undefined, {uri: onefile.uri});
+            }
           });
         });
 
@@ -50,7 +55,8 @@ app.controller('UploaderCtrl', [
   'appDBBridge',
   'queueData',
   'PouchDB',
-  function ($scope, cordovaServices, appDBBridge, queueData, PouchDB) {
+  'appBootStrap',
+  function ($scope, cordovaServices, appDBBridge, queueData, PouchDB, appBootStrap) {
   // PouchDB.remove(queueData);
 
   function pick_file_object (objval) {
@@ -60,49 +66,50 @@ app.controller('UploaderCtrl', [
     return  _.omit(objval, ['_id', '_rev']);
   }
 
-  $scope.doYa = function () {
 
 
-    //check if null is returned, since the selectOneDoc method returns
-    //null if no doc is found
-    var queue;
-    if (queueData) {
-      queue = _.values(omit_pouch_reserved_keys(queueData));
 
-          cordovaServices.returnFilePathName(queue[0].uri, function (fileMeta) {
-            cordovaServices.getFileObject(fileMeta.fullPath, fileMeta, function (fileObject) {
-              // fileObject.uri = uri;
-              $scope.$flow.addFile(fileObject, undefined, {});
-            });
-          });
+  //check if null is returned, since the selectOneDoc method returns
+  //null if no doc is found
+  var queue;
+  if (queueData) {
+    queue = _.values(omit_pouch_reserved_keys(queueData));
+        // cordovaServices.returnFilePathName(queue[0].uri, function (fileMeta) {
+        //   cordovaServices.getFileObject(fileMeta.fullPath, fileMeta, function (fileObject) {
+        //     // fileObject.uri = uri;
+        //     $scope.$flow.addFile(fileObject, undefined, {});
+        //   });
+        // });
+    // add files on the queue to our flow file queue
+    angular.forEach(queue, function (onefile) {
+      cordovaServices.returnFilePathName(onefile.uri, function (fileMeta) {
+        cordovaServices.getFileObjectfromFS(fileMeta, function (fileObject) {
+            if (!fileObject.length) {
+              $scope.$flow.addFile(fileObject, undefined, {uri: onefile.uri});
+            } else {
+              $scope.$flow.addFiles(fileObject, undefined, {uri: onefile.uri});
+            }
 
-
-      // add files on the queue to our flow file queue
-      // angular.forEach(queue, function (onefile) {
-      //   cordovaServices.returnFilePathName(onefile.uri, function (fileMeta) {
-      //     console.log(fileMeta);
-      //     cordovaServices.getFileObject(onefile.uri, fileMeta, function (fileObject) {
-      //       console.log(fileObject);
-      //       $scope.$flow.addFile(fileObject);
-      //       // files.push(fileObject);
-      //       // $scope.$flow.addFile(fileObject, undefined, {uri: onefile.uri});
-      //     });
-      //   });
-      // });
-    } else {
-      queue = [];
-    }
+        });
+      });
+    });
+  } else {
+    queue = [];
   }
 
+
   $scope.open_chooser = function () {
+    if (!appBootStrap.isBrowser()) return false;
     if (fileChooser) {
       fileChooser.open(function(uri) {
-
         cordovaServices.returnFilePathName(uri, function (fileMeta) {
-          cordovaServices.getFileObject(uri, fileMeta, function (fileObject) {
-            // fileObject.uri = uri;
-            console.log(uri);
-            $scope.$flow.addFile(fileObject, undefined, {uri: uri});
+          cordovaServices.getFileObjectfromResolve(uri, fileMeta, function (fileObject) {
+            if (!fileObject.length) {
+              $scope.$flow.addFile(fileObject, undefined, {uri: uri});
+            } else {
+              $scope.$flow.addFiles(fileObject, undefined, {uri: uri});
+            }
+            // $scope.$flow.addFile(fileObject, undefined, {uri: uri});
           });
         });
 
@@ -113,6 +120,7 @@ app.controller('UploaderCtrl', [
   };
 
   $scope.$flow.on('fileAdded', function (file, e, uri) {
+    if (!appBootStrap.isBrowser()) return;
     if (uri.uri) {
       queue.push(_.extend(uri, pick_file_object(file)));
       //save to queue
@@ -143,7 +151,8 @@ app.controller('AccountCtrl', [
   '$cordovaToast',
   'userData',
   'appDBBridge',
-  function ($scope, $ionicPopup, AuthenticationService, $cordovaToast, userData, appDBBridge) {
+  'appBootStrap',
+  function ($scope, $ionicPopup, AuthenticationService, $cordovaToast, userData, appDBBridge, appBootStrap) {
   $scope.uiElements = {};
   $scope.userData  = userData;
   $scope.accountPopup = function () {
@@ -184,11 +193,13 @@ app.controller('AccountCtrl', [
     .then(function () {
       $scope.uiElements.accountPopup.close();
       //toast for profile updated successfully
-      if ($cordovaToast) {
+      if ($cordovaToast && appBootStrap.isBrowser()) {
         $cordovaToast.showShortBottom('Profile has been updated.');
       }
     }, function () {
+      if ($cordovaToast && appBootStrap.isBrowser()) {
         $cordovaToast.showShortBottom('Profile update failed.');
+      }
     });
   };
 
@@ -237,12 +248,11 @@ app.filter('fileicon', ['appData', function (appData) {
   }
   return function (str) {
     if (str) {
-      var imgUrl = './img/filetype/' + str.split('/').pop() + '.png';
-      // imageExists(imgUrl, )
-      if (imageExists(str)) {
+      var imgUrl = 'file:///android_asset/www/img/filetype/' + str.split('/').pop() + '.png';
+      if (imageExists(str.split('/').pop())) {
         return imgUrl;
       } else {
-        return './img/filetype/no-img.png';
+        return 'file:///android_asset/www/img/filetype/no-img.png';
       }
     } else {
       return '';

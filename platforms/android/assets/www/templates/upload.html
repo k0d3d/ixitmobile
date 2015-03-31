@@ -3,15 +3,15 @@
       <div id="folderName" class="col">
         <div class="col-box">
           <p style="text-align: center" ng-show="$flow.files.length == 0"> No files on your upload queue here.</p>
-          <button class="button button-positive button-block button-small icon ion-plus"  ng-click="open_chooser()" >
+          <button class="button button-dark button-block button-small icon ion-plus" ng-click="open_chooser()">
             Choose Files
           </button>
         </div>
       </div>
     </div>
-    <div class="list list-inset" ng-show="$flow.files.length > 0">
+    <ion-list type="list-inset" can-swipe="false" ng-show="$flow.files.length > 0">
       <div upload-list-item ng-repeat="eachFile in $flow.files">
 
       </div>
-    </div>
+    </ion-list>
   </ion-content>

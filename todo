@@ -1,10 +1,19 @@
-fix uri property in file add event
-query user files from pouchdb
-use a filter to remove files that are completely uploaded from the queue badghe
+*fix uri property in file add event
+*query user files from pouchdb
+*use a filter to remove files that are completely uploaded from the queue badghe
+*set user.enabled field on user model to true if the user registers from a mobile device.
+file operation menu when item is touched down, delete, share,
+should check size of each chunk before uploading
 post files to s3
+add middleware to check if authentication token is valid using redis as session store
 fix oauth authenticated, transition to user files
 prompt before removing file
-set user.enabled field on user model to true if the user registers from a mobile device.
-add middleware to check if authentication token is valid using redis as session store
 set userid when user loggs in after oauth
 errors.nounce should log the actual error stack to the console, or logger
+update progress on mongodb.
+rewrite postHandler to use promises, should allow betta error reportin
+should return ixitid for chunk upload
+cancel method should remove file from queue
+file tagging and card view for more details on each file
+social sharing
+download file on click

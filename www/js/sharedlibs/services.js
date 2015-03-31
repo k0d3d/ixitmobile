@@ -550,19 +550,16 @@
           cb(err);
         });
       },
-      getFileObject: function (uri, fileMeta, cb) {
-        console.log(arguments);
+      getFileObjectfromFS: function getFileObjectfromFS (fileMeta, cb) {
         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
 
           fs.root.getFile(fileMeta.fullPath, {create: false}, function (fileEntry) {
-            console.log(fileEntry);
             fileEntry.file(function (fileObject) {
               //hack, should always return a file with its real filename and path
               fileObject.name = (ionic.Platform.version() <= 4.3) ? fileObject.name : fileMeta.fileName;
               cb(fileObject);
             }, function (err) {
               console.log(err);
-              console.log('Error creating file object');
             });
           }, function (err) {
             cb(err);
@@ -570,6 +567,21 @@
         }, function (err) {
           console.log(err);
         });
+      },
+      getFileObjectfromResolve: function getFileObjectfromResolve (uri, fileMeta, cb) {
+
+          window.resolveLocalFileSystemURL(uri,  function (fileEntry) {
+            fileEntry.file(function (fileObject) {
+              //hack, should always return a file with its real filename and path
+              fileObject.name = (ionic.Platform.version() <= 4.3) ? fileObject.name : fileMeta.fileName;
+              cb(fileObject);
+            }, function (err) {
+              console.log(err);
+            });
+          }, function (err) {
+            cb(err);
+          });
+
       }
     };
   }]);
@@ -588,6 +600,9 @@
       pendingPrompt: null,
       thisDevice: null,
       isRequesting: false,
+      isBrowser: function () {
+        return ionic.Platform.platforms.indexOf("browser") === -1;
+      },
       isBearerTokenPresent: function () {
         if ($window.localStorage.authorizationToken) {
           if ($window.localStorage.authorizationToken.split(' ')[0] === 'Bearer'){
@@ -697,15 +712,17 @@
                         })
                             .success(function(data) {
                                 $window.localStorage.authorizationToken = 'Bearer ' + data.access_token;
+                                browserRef.close();
                                 deferred.resolve(data);
                             })
                             .error(function(data, status) {
+                                browserRef.close();
                                 deferred.reject("Problem authenticating");
                             })
                             .finally(function() {
                                 setTimeout(function() {
                                     browserRef.close();
-                                }, 10);
+                                }, 0);
                             });
                     }
                 });

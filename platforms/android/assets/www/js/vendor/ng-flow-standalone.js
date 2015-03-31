@@ -63,7 +63,7 @@
      * @type {Object}
      */
     this.defaults = {
-      chunkSize: 1024 * 1024,
+      chunkSize: 256 * 1024,
       forceChunkSize: false,
       simultaneousUploads: 3,
       singleFile: false,
@@ -661,6 +661,7 @@
      * Reference to file
      * @type {File}
      */
+    // this.file = new Blob([file], {type: file.type});
     this.file = file;
 
     /**
@@ -1243,17 +1244,30 @@
         (this.fileObj.file.mozSlice ? 'mozSlice' :
           (this.fileObj.file.webkitSlice ? 'webkitSlice' :
             'slice')));
+      // modifed here start
+      // this.fileObj.file = new Blob([this.fileObj.file], {type: this.fileObj.file.type});
+      // modification stop
       var bytes = this.fileObj.file[func](this.startByte, this.endByte);
 
-      // Set up request and listen for event
-      this.xhr = new XMLHttpRequest();
-      this.xhr.upload.addEventListener('progress', this.progressHandler, false);
-      this.xhr.addEventListener("load", this.doneHandler, false);
-      this.xhr.addEventListener("error", this.doneHandler, false);
+      var reader = new FileReader();
 
-      var data = this.prepareXhrRequest('POST', this.flowObj.opts.method, bytes);
+      reader.onloadend = function (evt) {
 
-      this.xhr.send(data);
+        var b = new Blob([evt.target.result], {type: this.fileObj.file.type});
+
+        // Set up request and listen for event
+        this.xhr = new XMLHttpRequest();
+        this.xhr.upload.addEventListener('progress', this.progressHandler, false);
+        this.xhr.addEventListener('load', this.doneHandler, false);
+        this.xhr.addEventListener('error', this.doneHandler, false);
+
+        var data = this.prepareXhrRequest('POST', this.flowObj.opts.method, b);
+
+        this.xhr.send(data);
+      };
+
+      reader.readAsArrayBuffer(bytes);
+
     },
 
     /**

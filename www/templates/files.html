@@ -6,7 +6,7 @@
               <i class="icon ion-upload"></i>
             </p>
             <p style="text-align: center"> No uploaded files here.</p>
-          <button class="button button-positive button-block button-small icon ion-plus"  flow-btn>
+          <button class="button button-positive button-block button-small icon ion-plus">
             Choose Files
           </button>
         </div>
@@ -15,11 +15,11 @@
       <div class="list list-inset" ng-show="userRootCabinet.length">
 
           <a class="item item-avatar u-l-i-l" href="#" ng-repeat="f in userRootCabinet">
-            <img ng-src="{{f.filename | fileicon}}" img-cache>
+            <img ng-src="{{f.type | fileicon}}" img-cache>
             <h2>{{::f.filename}}</h2>
             <p>
               {{::f.size | formatFileSize}}
-              <span style="font-size: 11px;color: rgb(78, 164, 191);">{{f.completedDate | moment}}</span>
+              <span style="font-size: 11px;color: rgb(78, 164, 191);">{{::f.completedDate | moment}}</span>
             </p>
           </a>
 

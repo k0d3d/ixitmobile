@@ -24,7 +24,8 @@
         "jQuery": true,
         "cordova": true,
         "moment": true,
-        "_": true
+        "_": true,
+        "ionic": true
     },
     "predef": [ // Extra globals.
         "define",

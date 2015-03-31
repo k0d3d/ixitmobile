@@ -83,10 +83,10 @@ function message(to, toP, from, fromP) {
 }
 
 $rootScope.$on('$stateChangeStart', function(evt, to, toP, from, fromP) {
-  console.log('Start:   ' + message(to, toP, from, fromP));
+  // console.log('Start:   ' + message(to, toP, from, fromP));
 });
 $rootScope.$on('$stateChangeSuccess', function(evt, to, toP, from, fromP) {
-  console.log('Success: ' + message(to, toP, from, fromP));
+  // console.log('Success: ' + message(to, toP, from, fromP));
 });
 $rootScope.$on('$stateChangeError', function(evt, to, toP, from, fromP, err) {
   console.log('Error:   ' + message(to, toP, from, fromP), err);
@@ -101,7 +101,7 @@ $rootScope.$on('$stateChangeError', function(evt, to, toP, from, fromP, err) {
 
 }]);
 
-app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider, api_config) {
+app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFactoryProvider, api_config,$ionicConfigProvider) {
   $stateProvider
 
     .state('app', {
@@ -247,6 +247,8 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
 
       };
   }]);
+
+  // if(!ionic.Platform.isIOS())$ionicConfigProvider.scrolling.jsScrolling(false);
 
 });
 
@@ -404,7 +406,7 @@ app.controller('TixiCtrl',
 
   $scope.$flow.on('filesAdded', function (files) {
     // console.log($cordovaToast);
-    if ($cordovaToast) {
+    if ($cordovaToast && appBootStrap.isBrowser()) {
       $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
     }
     // console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));

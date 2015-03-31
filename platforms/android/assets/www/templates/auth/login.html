@@ -10,10 +10,10 @@
         Please sign in.
       </div>
       <label class="item item-input">
-        <input tabindex="1" type="text" placeholder="Email Address or Phone Number" ng-model="form.email" required autofocus>
+        <input tabindex="0" type="text" placeholder="Email Address or Phone Number" ng-model="form.email" required autofocus>
       </label>
       <label class="item item-input">
-        <input tabindex="2" type="password" placeholder="Password" ng-model="form.password" required>
+        <input tabindex="1" type="password" placeholder="Password" ng-model="form.password" required>
       </label>
       <div>
         <button type="submit" class="button button-block button-dark-blue" ng-click="loginBtn(form)" style="margin-top: 0; height: 60px" ng-disabled="loginForm.$invalid">LOGIN</button>
