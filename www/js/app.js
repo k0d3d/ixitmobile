@@ -339,6 +339,11 @@ app.controller('TixiCtrl',
     }
   };
 
+
+  $scope.onFilesTabSelected = function () {
+    $scope.$flow.emptyCompletedFileList();
+  };
+
   // $scope.loginModal = appBootStrap.loginModal;
 
   $scope.$on('app:connection-lost', function () {

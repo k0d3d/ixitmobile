@@ -124,6 +124,8 @@
 
       a.currentFolder = '';
 
+      a.newFiles = 0;
+
       // a.currentUser = $cookies.throne;
 
       a.path = [];

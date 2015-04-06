@@ -15,7 +15,7 @@
           <ion-nav-view name="uploadsContent" animation="slide-left-right"></ion-nav-view>
         </ion-tab>
 
-        <ion-tab title="My Cabinet" icon-on="ion-filing" icon-off="ion-filing" href="#/app/tixi/files">
+        <ion-tab title="My Cabinet" on-select="onFilesTabSelected()" icon-on="ion-filing" icon-off="ion-filing" href="#/app/tixi/files"  badge="$flow.completedUploads.length" badge-style="badge-positive">
           <ion-nav-view name="cabinetContent" animation="slide-left-right"></ion-nav-view>
         </ion-tab>
 

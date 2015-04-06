@@ -59,6 +59,12 @@
     this.files = [];
 
     /**
+     * List of FlowFile objects
+     * @type {Array.<FlowFile>}
+     */
+    this.completedUploads = [];
+
+    /**
      * Default options for flow.js
      * @type {Object}
      */
@@ -526,6 +532,28 @@
     },
 
     /**
+     * Add a completed file object to the list
+     * @function
+     * @param {File} file
+     * @param {Event} [event] event is optional
+     * @param {Object} [optData] optional data to be passed to the event handler
+     */
+    addCompletedFile: function (file) {
+      this.completedUploads.push(file);
+    },
+
+    /**
+     * empties the list of completed files
+     * @function
+     * @param {File} file
+     * @param {Event} [event] event is optional
+     * @param {Object} [optData] optional data to be passed to the event handler
+     */
+    emptyCompletedFileList: function () {
+      this.completedUploads.length = 0;
+    },
+
+    /**
      * Add a HTML5 File object to the list of files.
      * @function
      * @param {FileList|Array} fileList
@@ -800,6 +828,7 @@
             // console.log(this);
             // var self = this
             this.flowObj.fire('fileSuccess', this, message);
+            this.flowObj.addCompletedFile(this);
           }
           break;
         case 'retry':

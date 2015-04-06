@@ -15,10 +15,21 @@ app.controller('FilesCtrl', [
   $scope.userRootCabinet = [];
 
 
+  if (userRootCabinet) {
+    $scope.userRootCabinet = _.values(_.omit(userRootCabinet, ['_id', '_rev']));
+  }
+
   $scope.$on('$ionicView.enter', function(){
-    if (userRootCabinet) {
-      $scope.userRootCabinet = _.values(_.omit(userRootCabinet, ['_id', '_rev']));
-    }
+
+    appDBBridge.fetchAndSyncDataToScope('', 'Keeper.thisUserFiles', [])
+    .then(function (updatedDoc) {
+      var u = $timeout(function () {
+        $scope.userRootCabinet = _.values(_.omit(updatedDoc, ['_id', '_rev']));
+      }, 2000);
+      $scope.$on('$destroy', function () {
+        u.cancel();
+      });
+    });
   });
 
 
@@ -39,15 +50,8 @@ app.controller('FilesCtrl', [
       }, function (err) {
         console.log(err);
       });
-    } else {
-
     }
   };
-
-  appDBBridge.fetchAndSyncDataToScope('', 'Keeper.thisUserFiles', [])
-  .then(function (updatedDoc) {
-    $scope.userRootCabinet = _.values(_.omit(updatedDoc, ['_id', '_rev']));
-  });
 }]);
 
 app.controller('UploaderCtrl', [

@@ -4,10 +4,15 @@
 *set user.enabled field on user model to true if the user registers from a mobile device.
 *rewrite postHandler to use promises, should allow betta error reportin
 *should remove completed upload from app queue
-cancel method should remove file from queue and from disk
+*remove error deleting
+web intent
 file operation menu when item is touched down, delete, share,
-should check size of each chunk before uploading
+download file
+social sharing
 post files to s3
+cancel method should remove file from queue and from disk
+should local notify on completed uploads
+should check size of each chunk before uploading
 add middleware to check if authentication token is valid using redis as session store
 fix oauth authenticated, transition to user files
 prompt before removing file
@@ -16,11 +21,7 @@ errors.nounce should log the actual error stack to the console, or logger
 update progress on mongodb.
 should return ixitid for chunk upload
 file tagging and card view for more details on each file
-social sharing
-download file on click
 switch animation library to velocity js
-remove error deleting
-web intent
 app offline indicator
 
 1000,
