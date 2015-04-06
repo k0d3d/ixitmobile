@@ -19,6 +19,11 @@ app.controller('FilesCtrl', [
     if (userRootCabinet) {
       $scope.userRootCabinet = _.values(_.omit(userRootCabinet, ['_id', '_rev']));
     }
+
+    appDBBridge.fetchAndSyncDataToScope('', 'Keeper.thisUserFiles', [])
+    .then(function (updatedDoc) {
+      $scope.userRootCabinet = _.values(_.omit(updatedDoc, ['_id', '_rev']));
+    });
   });
 
 
@@ -43,11 +48,6 @@ app.controller('FilesCtrl', [
 
     }
   };
-
-  appDBBridge.fetchAndSyncDataToScope('', 'Keeper.thisUserFiles', [])
-  .then(function (updatedDoc) {
-    $scope.userRootCabinet = _.values(_.omit(updatedDoc, ['_id', '_rev']));
-  });
 }]);
 
 app.controller('UploaderCtrl', [
