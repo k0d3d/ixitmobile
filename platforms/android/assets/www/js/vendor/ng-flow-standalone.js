@@ -63,7 +63,7 @@
      * @type {Object}
      */
     this.defaults = {
-      chunkSize: 256 * 1024,
+      chunkSize: 1024 * 1024,
       forceChunkSize: false,
       simultaneousUploads: 3,
       singleFile: false,
@@ -1249,21 +1249,22 @@
       // modification stop
       var bytes = this.fileObj.file[func](this.startByte, this.endByte);
 
-      var reader = new FileReader();
+      var reader = new FileReader(), self = this;
 
       reader.onloadend = function (evt) {
 
-        var b = new Blob([evt.target.result], {type: this.fileObj.file.type});
+        var b = new Uint8Array(evt.target.result);
+        var blob = new Blob([b], {type: self.fileObj.file.type});
 
         // Set up request and listen for event
-        this.xhr = new XMLHttpRequest();
-        this.xhr.upload.addEventListener('progress', this.progressHandler, false);
-        this.xhr.addEventListener('load', this.doneHandler, false);
-        this.xhr.addEventListener('error', this.doneHandler, false);
+        self.xhr = new XMLHttpRequest();
+        self.xhr.upload.addEventListener('progress', self.progressHandler, false);
+        self.xhr.addEventListener('load', self.doneHandler, false);
+        self.xhr.addEventListener('error', self.doneHandler, false);
 
-        var data = this.prepareXhrRequest('POST', this.flowObj.opts.method, b);
+        var data = self.prepareXhrRequest('POST', self.flowObj.opts.method, blob);
 
-        this.xhr.send(data);
+        self.xhr.send(data);
       };
 
       reader.readAsArrayBuffer(bytes);

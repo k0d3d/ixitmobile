@@ -12,6 +12,7 @@ var app = angular.module('ixitApp', [
   'controllers',
   'services',
   'ixitApp.config'
+  // 'ixitApp.cordovaUpload'
   ]);
 
 app.run([
@@ -188,9 +189,9 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
     flowFactoryProvider.defaults = {
         target: api_config.FILEVAULT_API_URL + '/upload',
         chunkSize:1*1024*1024,
-        simultaneousUploads:4,
+        simultaneousUploads:1,
         testChunks:true,
-        maxFiles: 10,
+        // maxFiles: 10,
         // query: function queryParams (fileObj, chunkObj){
         //   return {
         //     fileType : fileObj.file.type.length > 0 ? fileObj.file.type : 'noMime',
@@ -198,7 +199,7 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
         //   };
         // },
         permanentErrors:[404, 500, 501],
-        maxChunkRetries: 1,
+        maxChunkRetries: 100,
         chunkRetryInterval: 5000,
     };
 

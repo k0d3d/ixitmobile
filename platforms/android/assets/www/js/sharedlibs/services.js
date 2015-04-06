@@ -6,33 +6,30 @@
     '$state',
     'appBootStrap',
     '$rootScope',
-    function ($http, api_config, $state, appBootStrap, $rootScope) {
-    var regid = '';
-
-
-    return {
-      setRegId: function (regId) {
-        this.regid = regId;
-        return true;
-      },
-      getRegId: function () {
-        return this.regid;
-      },
-      ping: function (deviceId, cb) {
-        var self = this;
-        $http.post('/api/v1/messaging/' + deviceId, {
-          rId: self.regid
-        })
-        .success(function (data) {
-          cb(data);
-        })
-        .error(function (err) {
-          cb(err);
-        });
-      },
-      execAction: function execAction (actionName, params) {
-      }
-    };
+    function ($http) {
+      return {
+        setRegId: function (regId) {
+          this.regid = regId;
+          return true;
+        },
+        getRegId: function () {
+          return this.regid;
+        },
+        ping: function (deviceId, cb) {
+          var self = this;
+          $http.post('/api/v1/messaging/' + deviceId, {
+            rId: self.regid
+          })
+          .success(function (data) {
+            cb(data);
+          })
+          .error(function (err) {
+            cb(err);
+          });
+        },
+        execAction: function execAction (actionName, params) {
+        }
+      };
   }]);
   app.factory('AuthenticationService', [
     '$rootScope',
@@ -49,10 +46,10 @@
             phoneNumber: user.phoneNumber,
             password: user.password
           })
-          .success(function (data, status) {
+          .success(function (data) {
             cb(data);
           })
-          .error(function (data, status) {
+          .error(function (data) {
             cb(new Error(data.message));
           });
         },
@@ -393,6 +390,17 @@
             doc.remoteid = docid;
           }
 
+          function retryUntilWritten(doc) {
+
+              return PouchDB.put(doc)
+              .catch(function (err) {
+                if (err.status === 409) {
+                  return retryUntilWritten(doc);
+                } else { // new doc
+                  return PouchDB.put(doc);
+                }
+              });
+          }
 
           //find the update
           self.selectOneDoc(doc, collectionName)
@@ -408,8 +416,10 @@
             }
 
             // console.log(JSON.stringify(doc));
-            return PouchDB.put(doc);
+            // return PouchDB.put(doc);
+            return retryUntilWritten(doc, foundDoc);
           })
+
           .then(function () {
             q.resolve(doc);
           }, function (err) {
@@ -639,40 +649,24 @@
           cb(popover);
         });
       },
-      clientAuthenticationCheck: function (cb) {
-        var self = this,
+      clientAuthenticationCheck: function () {
+        var
             deviceId = $cordovaDevice.getUUID();
         return $http.get('/api/v2/clients/' + deviceId + '?field_type=device');
-        // .success(function (client) {
-        //   cb(client);
-        // })
-        // .error(function (err, status) {
-        //   if(status === 404) {
-        //     cb (404);
-        //   } else {
-        //     cb (err);
-        //   }
 
-        // });
       },
-      clientAuthenticationCreate: function (cb) {
-        var self = this,
+      clientAuthenticationCreate: function () {
+        var
             deviceName = $cordovaDevice.getModel() || 'Unknown Device',
             deviceId = $cordovaDevice.getUUID();
             return $http.post('/api/v2/clients', {
               name: deviceName,
               deviceId: deviceId
             });
-        // .success(function (data) {
-        //   cb (data);
-        // })
-        // .error(function (err) {
-        //   console.log(err);
-        //   cb(err);
-        // });
+
       },
-      clientAuthenticationReset: function () {
-        var self = this,
+      clientAuthenticationReset: function (cb) {
+        var
             deviceId = $cordovaDevice.getUUID();
         $http.delete('/api/v2/clients/' + deviceId + '?field_type=id')
         .success(function (data) {
@@ -720,9 +714,8 @@
                                 deferred.reject("Problem authenticating");
                             })
                             .finally(function() {
-                                setTimeout(function() {
-                                    browserRef.close();
-                                }, 0);
+                              browserRef.close();
+
                             });
                     }
                 });
