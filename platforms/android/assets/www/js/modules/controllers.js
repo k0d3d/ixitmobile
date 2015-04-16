@@ -11,14 +11,26 @@ app.controller('FilesCtrl', [
   'appDBBridge',
   'appBootStrap',
   function($scope, $ionicModal, $timeout, userRootCabinet, cordovaServices, appDBBridge, appBootStrap) {
-  // userRootCabinet.then(function (res) {
-  //   $scope.userRootCabinet = res;
-  // });
+
   $scope.userRootCabinet = [];
+
 
   if (userRootCabinet) {
     $scope.userRootCabinet = _.values(_.omit(userRootCabinet, ['_id', '_rev']));
   }
+
+  $scope.$on('$ionicView.enter', function(){
+
+    appDBBridge.fetchAndSyncDataToScope('', 'Keeper.thisUserFiles', [])
+    .then(function (updatedDoc) {
+      var u = $timeout(function () {
+        $scope.userRootCabinet = _.values(_.omit(updatedDoc, ['_id', '_rev']));
+      }, 2000);
+      $scope.$on('$destroy', function () {
+        u.cancel();
+      });
+    });
+  });
 
 
   $scope.open_chooser = function () {
@@ -38,15 +50,8 @@ app.controller('FilesCtrl', [
       }, function (err) {
         console.log(err);
       });
-    } else {
-
     }
   };
-
-  appDBBridge.fetchAndSyncDataToScope('', 'Keeper.thisUserFiles', [])
-  .then(function (updatedDoc) {
-    $scope.userRootCabinet = _.values(_.omit(updatedDoc, ['_id', '_rev']));
-  });
 }]);
 
 app.controller('UploaderCtrl', [
@@ -85,9 +90,9 @@ app.controller('UploaderCtrl', [
       cordovaServices.returnFilePathName(onefile.uri, function (fileMeta) {
         cordovaServices.getFileObjectfromFS(fileMeta, function (fileObject) {
             if (!fileObject.length) {
-              $scope.$flow.addFile(fileObject, undefined, {uri: onefile.uri});
+              $scope.$flow.addFile(fileObject, undefined, {uri: onefile.uri, cached: true});
             } else {
-              $scope.$flow.addFiles(fileObject, undefined, {uri: onefile.uri});
+              $scope.$flow.addFiles(fileObject, undefined, {uri: onefile.uri, cached: true});
             }
 
         });
@@ -121,7 +126,7 @@ app.controller('UploaderCtrl', [
 
   $scope.$flow.on('fileAdded', function (file, e, uri) {
     if (!appBootStrap.isBrowser()) return;
-    if (uri.uri) {
+    if (uri.uri && !uri.cached) {
       queue.push(_.extend(uri, pick_file_object(file)));
       //save to queue
       appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue))
@@ -137,9 +142,17 @@ app.controller('UploaderCtrl', [
   });
 
   $scope.$flow.on('fileSuccess', function (file) {
-     _.remove(queue, function (n) {
+    console.log(queue.length);
+    //removes completed upload from db queue
+    var indexOfQueuedFile =  _.findIndex(queue, function (n) {
       return n.uniqueIdentifier == file.uniqueIdentifier;
     });
+    var indexOfCompletedFile =  _.findIndex($scope.$flow.files, function (n) {
+      return n.uniqueIdentifier == file.uniqueIdentifier;
+    });
+    $scope.$flow.files.splice(indexOfCompletedFile, 1);
+    queue.splice(indexOfQueuedFile, 1);
+    console.log(queue.length);
     appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue));
   });
 }]);

@@ -59,6 +59,12 @@
     this.files = [];
 
     /**
+     * List of FlowFile objects
+     * @type {Array.<FlowFile>}
+     */
+    this.completedUploads = [];
+
+    /**
      * Default options for flow.js
      * @type {Object}
      */
@@ -526,6 +532,28 @@
     },
 
     /**
+     * Add a completed file object to the list
+     * @function
+     * @param {File} file
+     * @param {Event} [event] event is optional
+     * @param {Object} [optData] optional data to be passed to the event handler
+     */
+    addCompletedFile: function (file) {
+      this.completedUploads.push(file);
+    },
+
+    /**
+     * empties the list of completed files
+     * @function
+     * @param {File} file
+     * @param {Event} [event] event is optional
+     * @param {Object} [optData] optional data to be passed to the event handler
+     */
+    emptyCompletedFileList: function () {
+      this.completedUploads.length = 0;
+    },
+
+    /**
      * Add a HTML5 File object to the list of files.
      * @function
      * @param {FileList|Array} fileList
@@ -800,6 +828,7 @@
             // console.log(this);
             // var self = this
             this.flowObj.fire('fileSuccess', this, message);
+            this.flowObj.addCompletedFile(this);
           }
           break;
         case 'retry':
@@ -1249,15 +1278,26 @@
       // modification stop
       var bytes = this.fileObj.file[func](this.startByte, this.endByte);
 
-      // Set up request and listen for event
-      this.xhr = new XMLHttpRequest();
-      this.xhr.upload.addEventListener('progress', this.progressHandler, false);
-      this.xhr.addEventListener('load', this.doneHandler, false);
-      this.xhr.addEventListener('error', this.doneHandler, false);
+      var reader = new FileReader(), self = this;
 
-      var data = this.prepareXhrRequest('POST', this.flowObj.opts.method, bytes);
+      reader.onloadend = function (evt) {
 
-      this.xhr.send(data);
+        var b = new Uint8Array(evt.target.result);
+        var blob = new Blob([b], {type: self.fileObj.file.type});
+
+        // Set up request and listen for event
+        self.xhr = new XMLHttpRequest();
+        self.xhr.upload.addEventListener('progress', self.progressHandler, false);
+        self.xhr.addEventListener('load', self.doneHandler, false);
+        self.xhr.addEventListener('error', self.doneHandler, false);
+
+        var data = self.prepareXhrRequest('POST', self.flowObj.opts.method, blob);
+
+        self.xhr.send(data);
+      };
+
+      reader.readAsArrayBuffer(bytes);
+
     },
 
     /**

@@ -13,7 +13,7 @@
               </span>
             </p>
             <!-- show if is uploading -->
-            <div class="file-upload-status-icon" ng-show="eachFile.isUploading()" ng-click="eachFile.cancel()">
+            <div class="file-upload-status-icon" ng-show="!eachFile.error && !eachFile.isComplete()" ng-click="eachFile.cancel()">
               <i class="icon ion-close-circled"></i>
             </div>
             <!-- show if No errors and is complete -->
@@ -25,7 +25,7 @@
               <i class="icon ion-android-alert"></i>
             </div>
           </div>
-          <div class="meter" ng-hide="eachFile.error || !eachFile.isUploading()">
+          <div class="meter" ng-hide="eachFile.error || eachFile.isComplete()">
             <span class="calm" ng-style="{'width': (eachFile.progress() * 100) + '%'}"></span>
           </div>
         </div>
