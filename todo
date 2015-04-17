@@ -5,12 +5,14 @@
 *rewrite postHandler to use promises, should allow betta error reportin
 *should remove completed upload from app queue
 *remove error deleting
-web intent
+*web intent
 file operation menu when item is touched down, delete, share,
+delete file
 download file
 social sharing
-post files to s3
 cancel method should remove file from queue and from disk
+web intent for multiple files
+post files to s3
 should local notify on completed uploads
 should check size of each chunk before uploading
 add middleware to check if authentication token is valid using redis as session store
@@ -23,13 +25,3 @@ should return ixitid for chunk upload
 file tagging and card view for more details on each file
 switch animation library to velocity js
 app offline indicator
-
-1000,
-300
-100
-250
-1650
-200
-1850
-500
-2350

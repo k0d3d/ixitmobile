@@ -61,7 +61,8 @@ app.controller('UploaderCtrl', [
   'queueData',
   'PouchDB',
   'appBootStrap',
-  function ($scope, cordovaServices, appDBBridge, queueData, PouchDB, appBootStrap) {
+  '$stateParams',
+  function ($scope, cordovaServices, appDBBridge, queueData, PouchDB, appBootStrap, $stateParams) {
   // PouchDB.remove(queueData);
 
   function pick_file_object (objval) {
@@ -69,6 +70,19 @@ app.controller('UploaderCtrl', [
   }
   function omit_pouch_reserved_keys (objval) {
     return  _.omit(objval, ['_id', '_rev']);
+  }
+
+  if($stateParams.intentUri) {
+    cordovaServices.returnFilePathName($stateParams.intentUri, function (fileMeta) {
+      cordovaServices.getFileObjectfromResolve($stateParams.intentUri, fileMeta, function (fileObject) {
+        if (!fileObject.length) {
+          $scope.$flow.addFile(fileObject, undefined, {uri: $stateParams.intentUri});
+        } else {
+          $scope.$flow.addFiles(fileObject, undefined, {uri: $stateParams.intentUri});
+        }
+        // $scope.$flow.addFile(fileObject, undefined, {uri: uri});
+      });
+    });
   }
 
 
@@ -142,7 +156,6 @@ app.controller('UploaderCtrl', [
   });
 
   $scope.$flow.on('fileSuccess', function (file) {
-    console.log(queue.length);
     //removes completed upload from db queue
     var indexOfQueuedFile =  _.findIndex(queue, function (n) {
       return n.uniqueIdentifier == file.uniqueIdentifier;
@@ -152,7 +165,6 @@ app.controller('UploaderCtrl', [
     });
     $scope.$flow.files.splice(indexOfCompletedFile, 1);
     queue.splice(indexOfQueuedFile, 1);
-    console.log(queue.length);
     appDBBridge.updateDBCollection('Keeper.thisUserQueue', appDBBridge.prepArraytoObject(queue));
   });
 }]);

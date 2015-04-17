@@ -26,6 +26,9 @@ app.run([
   // function($ionicPlatform, $rootScope, appBootStrap, $document, $window, $state, $stateParams) {
   function($ionicPlatform, $rootScope, appBootStrap, $state) {
 
+  function failedActivity (err) {
+    console.log(err);
+  }
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -51,49 +54,48 @@ app.run([
         alert('ImgCache init: error! Check the log for errors');
     });
 
-    // window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_STREAM,
+    window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_STREAM,
+        function(url) {
+          $state.go('app.tixi.intent_upload', {intentUri: url});
+        }, failedActivity
+    );
+    // window.plugins.webintent.getExtra(window.plugins.webintent.EXTRA_TEXT,
     //     function(url) {
     //       console.log(url);
     //         // url is the value of EXTRA_TEXT
-    //     }, function() {
-    //         // There was no extra supplied.
-    //         // console.log('Nothing sent in');
-    //     }
+    //     }, failedActivity
     // );
     // window.plugins.webintent.getUri(function(url) {
     //   if(url !== '') {
     //     // url is the url the intent was launched with
     //     console.log(url);
     //   }
-    // });
-    // window.plugins.webintent.onNewIntent(function(url) {
-    //   console.log(url);
-    //     if(url !== '') {
-    //       console.log(url);
-    //         // url is the url that was passed to onNewIntent
-    //     }
-    // });
+    // }, failedActivity);
+    window.plugins.webintent.onNewIntent(function(url) {
+      console.log(url);
+        if(url !== '') {
+          console.log(url);
+            // url is the url that was passed to onNewIntent
+        }
+    }, failedActivity);
 
-    // if thr no no auth..token in app local storage, treat d user as a first time user
-    // if (!$window.localStorage.authorizationToken) {
-    //     return $state.transitionTo('app.fs.welcome', $stateParams, { reload: true, inherit: true, notify: true });
-    // }
-$rootScope.$state = $state;
-function message(to, toP, from, fromP) {
-  return from.name  + angular.toJson(fromP) + ' -> ' +     to.name + angular.toJson(toP);
-}
 
-$rootScope.$on('$stateChangeStart', function(evt, to, toP, from, fromP) {
-  // console.log('Start:   ' + message(to, toP, from, fromP));
-});
-$rootScope.$on('$stateChangeSuccess', function(evt, to, toP, from, fromP) {
-  // console.log('Success: ' + message(to, toP, from, fromP));
-});
-$rootScope.$on('$stateChangeError', function(evt, to, toP, from, fromP, err) {
-  console.log('Error:   ' + message(to, toP, from, fromP), err);
-  // return evt.preventDefault();
-  $state.go(from.name, {} , {reload: true});
-});
+    $rootScope.$state = $state;
+    function message(to, toP, from, fromP) {
+      return from.name  + angular.toJson(fromP) + ' -> ' +     to.name + angular.toJson(toP);
+    }
+
+    $rootScope.$on('$stateChangeStart', function(evt, to, toP, from, fromP) {
+      // console.log('Start:   ' + message(to, toP, from, fromP));
+    });
+    $rootScope.$on('$stateChangeSuccess', function(evt, to, toP, from, fromP) {
+      // console.log('Success: ' + message(to, toP, from, fromP));
+    });
+    $rootScope.$on('$stateChangeError', function(evt, to, toP, from, fromP, err) {
+      console.log('Error:   ' + message(to, toP, from, fromP), err);
+      // return evt.preventDefault();
+      $state.go(from.name, {} , {reload: true});
+    });
 
     //load this device in
     appBootStrap.strapCordovaDevice();
@@ -154,6 +156,20 @@ app.config(function($stateProvider, $urlRouterProvider, $httpProvider, flowFacto
     })
     .state('app.tixi.upload', {
       url: '/upload',
+      views: {
+        'uploadsContent@app.tixi' :{
+          templateUrl: 'templates/upload.html',
+          controller: 'UploaderCtrl',
+          resolve: {
+            queueData: function (appDBBridge) {
+              return appDBBridge.selectOneDoc({}, 'Keeper.thisUserQueue');
+            }
+          }
+        }
+      }
+    })
+    .state('app.tixi.intent_upload', {
+      url: '/upload/:intentUri',
       views: {
         'uploadsContent@app.tixi' :{
           templateUrl: 'templates/upload.html',
@@ -410,9 +426,9 @@ app.controller('TixiCtrl',
     $timeout.cancel(connection);
   });
 
-  $scope.$flow.on('filesAdded', function (files) {
+  $scope.$flow.on('filesAdded', function (files, e, optsData) {
     // console.log($cordovaToast);
-    if ($cordovaToast && appBootStrap.isBrowser()) {
+    if ($cordovaToast && appBootStrap.isBrowser() && !optsData.cached) {
       $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
     }
     // console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));

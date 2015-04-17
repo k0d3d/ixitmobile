@@ -32,6 +32,7 @@
   "homepage": "https://github.com/k0d3d/ixitmobile",
   "cordovaPlugins": [
     "https://github.com/EddyVerbruggen/LaunchMyApp-PhoneGap-Plugin.git",
-    "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git"
+    "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git",
+    "https://github.com/Initsogar/cordova-webintent.git"
   ]
 }

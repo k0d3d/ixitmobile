@@ -20,13 +20,13 @@ import org.apache.cordova.PluginResult;
 /**
  * WebIntent is a PhoneGap plugin that bridges Android intents and web
  * applications:
- * 
+ *
  * 1. web apps can spawn intents that call native Android applications. 2.
  * (after setting up correct intent filters for PhoneGap applications), Android
  * intents can be handled by PhoneGap web applications.
- * 
+ *
  * @author boris@borismus.com
- * 
+ *
  */
 public class WebIntent extends CordovaPlugin {
 
@@ -89,7 +89,13 @@ public class WebIntent extends CordovaPlugin {
                 String extraName = args.getString(0);
                 if (i.hasExtra(extraName)) {
                     //return new PluginResult(PluginResult.Status.OK, i.getStringExtra(extraName));
-                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, i.getStringExtra(extraName)));
+                    // callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, i.getStringExtra(extraName)));
+                    // callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, i.getStringExtra(extraName)));
+                    String r = i.getStringExtra(extraName);
+                    if (r == null ) {
+                        r = ((Uri) i.getParcelableExtra(extraName)).toString();
+                    }
+                    callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, r));
                     return true;
                 } else {
                     //return new PluginResult(PluginResult.Status.ERROR);
@@ -111,18 +117,18 @@ public class WebIntent extends CordovaPlugin {
             } else if (action.equals("onNewIntent")) {
             	//save reference to the callback; will be called on "new intent" events
                 this.onNewIntentCallbackContext = callbackContext;
-        
+
                 if (args.length() != 0) {
                     callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.INVALID_ACTION));
                     return false;
                 }
-                
+
                 PluginResult result = new PluginResult(PluginResult.Status.NO_RESULT);
                 result.setKeepCallback(true); //re-use the callback on intent events
                 callbackContext.sendPluginResult(result);
                 return true;
                 //return result;
-            } else if (action.equals("sendBroadcast")) 
+            } else if (action.equals("sendBroadcast"))
             {
                 if (args.length() != 1) {
                     //return new PluginResult(PluginResult.Status.INVALID_ACTION);
@@ -165,7 +171,7 @@ public class WebIntent extends CordovaPlugin {
 
     @Override
     public void onNewIntent(Intent intent) {
-    	 
+
         if (this.onNewIntentCallbackContext != null) {
         	PluginResult result = new PluginResult(PluginResult.Status.OK, intent.getDataString());
         	result.setKeepCallback(true);
@@ -175,7 +181,7 @@ public class WebIntent extends CordovaPlugin {
 
     void startActivity(String action, Uri uri, String type, Map<String, String> extras) {
         Intent i = (uri != null ? new Intent(action, uri) : new Intent(action));
-        
+
         if (type != null && uri != null) {
             i.setDataAndType(uri, type); //Fix the crash problem with android 2.3.6
         } else {
@@ -183,7 +189,7 @@ public class WebIntent extends CordovaPlugin {
                 i.setType(type);
             }
         }
-        
+
         for (String key : extras.keySet()) {
             String value = extras.get(key);
             // If type is text html, the extra text must sent as HTML
