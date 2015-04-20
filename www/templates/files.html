@@ -14,13 +14,29 @@
     </div>
       <div class="list list-inset" ng-show="userRootCabinet.length">
 
-          <a class="item item-avatar u-l-i-l" href="#" ng-repeat="f in userRootCabinet">
+          <a class="item item-avatar u-l-i-l" href="#" ng-repeat="f in userRootCabinet" ng-init="f.isExpanded = false" ng-click="f.isExpanded = !f.isExpanded" ng-class="{'expanded-item': f.isExpanded}">
             <img ng-src="{{f.type | fileicon}}" img-cache>
             <h2>{{::f.filename}}</h2>
             <p>
               {{::f.size | formatFileSize}}
-              <span style="font-size: 11px;color: rgb(78, 164, 191);">{{::f.completedDate | moment}}</span>
+              <span style="font-size: 11px;color: rgb(78, 164, 191); float: right">{{::f.completedDate | moment}}</span>
             </p>
+            <div class="more-file-options" ng-show="f.isExpanded">
+              <div class="button-bar">
+                <button class="button button-clear button-light">
+                  <i class="ion ion-android-more-horizontal"></i>
+                </button>
+                <button class="button button-clear button-light">
+                  <i class="ion ion-android-archive"></i>
+                </button>
+                <button class="button button-clear button-light">
+                <i class="ion ion-android-share-alt"></i>
+                </button>
+                <button class="button button-clear button-light">
+                  <i class="ion ion-android-remove-circle"></i>
+                </button>
+              </div>
+            </div>
           </a>
 
       </div>

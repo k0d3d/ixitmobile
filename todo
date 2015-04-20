@@ -11,6 +11,7 @@ delete file
 download file
 social sharing
 cancel method should remove file from queue and from disk
+set userid when user loggs in after oauth
 web intent for multiple files
 post files to s3
 should local notify on completed uploads
@@ -18,7 +19,6 @@ should check size of each chunk before uploading
 add middleware to check if authentication token is valid using redis as session store
 fix oauth authenticated, transition to user files
 prompt before removing file
-set userid when user loggs in after oauth
 errors.nounce should log the actual error stack to the console, or logger
 update progress on mongodb.
 should return ixitid for chunk upload

@@ -51,10 +51,10 @@ var config_data = {
     // 'url': 'http://192.168.1.3:3000'
     // 'CONSUMER_API_URL': 'http://192.168.42.18:3000',
     // 'FILEVAULT_API_URL': 'http://192.168.42.18:3001',
-    'CONSUMER_API_URL': 'http://192.168.1.103:3000',
-    'FILEVAULT_API_URL': 'http://192.168.1.103:3001'
-    // 'CONSUMER_API_URL': 'http://thawing-wave-1121.herokuapp.com',
-    // 'FILEVAULT_API_URL': 'http://dk33p.herokuapp.com'
+    // 'CONSUMER_API_URL': 'http://192.168.1.103:3000',
+    // 'FILEVAULT_API_URL': 'http://192.168.1.103:3001'
+    'CONSUMER_API_URL': 'http://thawing-wave-1121.herokuapp.com',
+    'FILEVAULT_API_URL': 'http://ec2-54-191-53-79.us-west-2.compute.amazonaws.com:3333'
     // 'CONSUMER_API_URL': 'http://127.0.0.1:3000',
     // 'FILEVAULT_API_URL': 'http://127.0.0.1:3001'
     // 'CONSUMER_API_URL': 'http://192.168.56.1:3000',

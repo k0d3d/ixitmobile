@@ -283,7 +283,6 @@ app.filter('fileicon', ['appData', function (appData) {
       return '';
     }
   };
-}])
-;
+}]);
 
 })();

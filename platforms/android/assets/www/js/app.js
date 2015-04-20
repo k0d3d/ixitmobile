@@ -426,9 +426,9 @@ app.controller('TixiCtrl',
     $timeout.cancel(connection);
   });
 
-  $scope.$flow.on('filesAdded', function (files) {
+  $scope.$flow.on('filesAdded', function (files, e, optsData) {
     // console.log($cordovaToast);
-    if ($cordovaToast && appBootStrap.isBrowser()) {
+    if ($cordovaToast && appBootStrap.isBrowser() && !optsData.cached) {
       $cordovaToast.showShortBottom($interpolate('{{count}} file(s) successfully added to queue.')({count: files.length}));
     }
     // console.log($interpolate('{{count}} successfully added to queue.')({count: files.length}));

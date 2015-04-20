@@ -170,7 +170,16 @@ border-radius: 10px 10px 0 0;
 .file-upload-status-icon i.ion-android-alert{
   color: red;
 }
-
+.more-file-options {
+position: absolute;
+width: 100%;
+left: 0;
+background-color: grey;
+border-top: solid 1px #595656;
+}
+.expanded-item {
+  height: 111px;
+}
 @media (min-width: 768px) {
   .menu-content {
      -webkit-transform: translate3d(270px, 0px, 0px) !important;
